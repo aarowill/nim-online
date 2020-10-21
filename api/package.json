@@ -1,0 +1,107 @@
+{
+  "name": "api",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "tsc --build tsconfig.prod.json",
+    "lint": "tsc --noEmit && eslint src/**/*.ts",
+    "start": "node -r module-alias/register ./dist --env=production",
+    "start:dev": "nodemon",
+    "test": "jest --watch"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "src"
+    ],
+    "ext": "ts",
+    "ignore": [
+      "src/public",
+      "src/**/*.test.ts"
+    ],
+    "exec": "ts-node -r tsconfig-paths/register ./src"
+  },
+  "_moduleAliases": {
+    "@daos": "dist/daos",
+    "@entities": "dist/entities",
+    "@shared": "dist/shared",
+    "@server": "dist/Server"
+  },
+  "eslintConfig": {
+    "parser": "@typescript-eslint/parser",
+    "ignorePatterns": "babel.config.js",
+    "plugins": [
+      "@typescript-eslint",
+      "jest"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:@typescript-eslint/recommended-requiring-type-checking",
+      "plugin:jest/recommended",
+      "airbnb-typescript/base",
+      "prettier",
+      "prettier/@typescript-eslint"
+    ],
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    },
+    "rules": {
+      "quotes": [
+        "error",
+        "single",
+        {
+          "avoidEscape": true
+        }
+      ],
+      "max-len": [
+        "error",
+        120
+      ]
+    }
+  },
+  "dependencies": {
+    "command-line-args": "^5.1.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
+    "helmet": "^4.1.1",
+    "http-status-codes": "^2.1.4",
+    "jest": "^26.6.0",
+    "jet-logger": "^1.0.2",
+    "jsonfile": "^6.0.1",
+    "module-alias": "^2.2.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/preset-typescript": "^7.12.1",
+    "@types/command-line-args": "^5.0.0",
+    "@types/cookie-parser": "^1.4.2",
+    "@types/express": "^4.17.8",
+    "@types/find": "^0.2.1",
+    "@types/fs-extra": "^9.0.2",
+    "@types/jasmine": "^3.5.14",
+    "@types/jsonfile": "^6.0.0",
+    "@types/morgan": "^1.9.1",
+    "@types/node": "^14.14.2",
+    "@types/supertest": "^2.0.10",
+    "@typescript-eslint/eslint-plugin": "^4.5.0",
+    "@typescript-eslint/parser": "^4.5.0",
+    "babel-jest": "^26.6.0",
+    "eslint": "^7.11.0",
+    "eslint-config-airbnb-typescript": "^12.0.0",
+    "eslint-config-prettier": "^6.14.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.1.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "find": "^0.3.0",
+    "fs-extra": "^9.0.1",
+    "nodemon": "^2.0.6",
+    "prettier": "^2.1.2",
+    "prettier-eslint": "^11.0.0",
+    "supertest": "^5.0.0",
+    "ts-node": "^9.0.0",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^4.0.3"
+  }
+}
