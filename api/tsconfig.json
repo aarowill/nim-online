@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    /* Visit https://aka.ms/tsconfig.json to read more about this file */
     "incremental": true,
     "target": "es6",
     "module": "commonjs",
@@ -17,7 +16,8 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
-      "@shared/*": ["src/shared/*"]
+      "@shared/*": ["src/shared/*"],
+      "@src/*": ["src/*"]
     }
   },
   "include": ["src/**/*.ts", "spec/**/*.ts"],
