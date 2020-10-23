@@ -20,6 +20,26 @@ interface NimOptions {
 }
 
 /**
+ * The maximum number of sticks to start a game with.
+ */
+const MAX_NUMBER_OF_STICKS = 30;
+
+/**
+ * The minimum number of sticks to start a game with.
+ */
+const MIN_NUMBER_OF_STICKS = 5;
+
+/**
+ * The maximum upper limit of sticks to pick up per turn.
+ */
+const MAX_PICKUP_PER_TURN = 5;
+
+/**
+ * The minimum upper limit of sticks to pick up per turn.
+ */
+const MIN_PICKUP_PER_TURN = 2;
+
+/**
  * Get the next player given a current player.
  *
  * @returns the next player
@@ -41,19 +61,19 @@ export const newGameState = (
     lastStickOnTurnLoses: true,
   }
 ): NimGame => {
-  if (numberOfSticks > 30) {
+  if (numberOfSticks > MAX_NUMBER_OF_STICKS) {
     throw new Error('Too many sticks. Max is 30');
   }
 
-  if (numberOfSticks < 5) {
+  if (numberOfSticks < MIN_NUMBER_OF_STICKS) {
     throw new Error('Too few sticks. Min is 5');
   }
 
-  if (maxPickupPerTurn > 5) {
+  if (maxPickupPerTurn > MAX_PICKUP_PER_TURN) {
     throw new Error('Max pickup per turn is too high. Max is 5');
   }
 
-  if (maxPickupPerTurn < 2) {
+  if (maxPickupPerTurn < MIN_PICKUP_PER_TURN) {
     throw new Error('Max pickup per turn is too low. Min is 2');
   }
 
