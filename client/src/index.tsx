@@ -1,11 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import NimOnline from './NimOnline';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <NimOnline />
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -9,8 +9,8 @@ const server = http.createServer();
 const io = socketio(server);
 io.sockets.on('connect', (socket) => {
   Object.entries(eventHandlers).forEach(([event, handler]) => {
-    socket.on(event, (...args) => {
-      handler(socket, ...args);
+    socket.on(event, (data, callback) => {
+      handler(socket, data, callback);
     });
   });
 });
