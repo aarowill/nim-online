@@ -7,13 +7,13 @@ const options = commandLineArgs([
     name: 'env',
     alias: 'e',
     defaultValue: 'development',
-    type: String
-  }
+    type: String,
+  },
 ]);
 
 // Set the env file
 const result2 = dotenv.config({
-  path: `./env/${options.env as string}.env`
+  path: `./env/${options.env as string}.env`,
 });
 
 if (result2.error) {

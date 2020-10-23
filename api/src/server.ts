@@ -32,7 +32,7 @@ app.use('/api', BaseRouter);
 app.use((err: Error, _req: Request, res: Response) => {
   logger.err(err, true);
   return res.status(BAD_REQUEST).json({
-    error: err.message
+    error: err.message,
   });
 });
 
