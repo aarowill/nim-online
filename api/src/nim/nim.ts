@@ -22,7 +22,7 @@ interface NimOptions {
 /**
  * The maximum number of sticks to start a game with.
  */
-const MAX_NUMBER_OF_STICKS = 30;
+const MAX_NUMBER_OF_STICKS = 35;
 
 /**
  * The minimum number of sticks to start a game with.

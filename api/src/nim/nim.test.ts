@@ -30,7 +30,7 @@ describe('nim', () => {
       });
 
       it('fails to create a board with too many sticks', () => {
-        expect(() => newGameState({ numberOfSticks: 31 })).toThrow(/too many sticks/i);
+        expect(() => newGameState({ numberOfSticks: 36 })).toThrow(/too many sticks/i);
       });
 
       it('fails to create a board with too few sticks', () => {
