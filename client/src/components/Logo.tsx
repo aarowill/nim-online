@@ -19,7 +19,7 @@ const Logo = (): ReactElement => {
   const classes = useStyles(theme)();
 
   return (
-    <Typography className={classes.root} variant="h1">
+    <Typography className={classes.root} variant="h1" gutterBottom>
       NIM
       <Typography className={classes.subtitle} variant="h5" component="span">
         Online

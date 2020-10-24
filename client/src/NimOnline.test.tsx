@@ -4,6 +4,6 @@ import App from './NimOnline';
 
 test('renders learn react link', () => {
   const { getByText } = render(<App />);
-  const linkElement = getByText(/learn react/i);
+  const linkElement = getByText(/nim/i);
   expect(linkElement).toBeInTheDocument();
 });

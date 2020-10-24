@@ -1,10 +1,13 @@
 import React, { ReactElement } from 'react';
 import LogoContainerView from '../components/LogoContainerView';
+import GameConfiguration from '../components/GameConfiguration';
+import JoinCodeDisplay from '../components/JoinCodeDisplay';
 
 function NewGame(): ReactElement {
   return (
     <LogoContainerView>
-      <h1>New game!</h1>
+      <JoinCodeDisplay />
+      <GameConfiguration />
     </LogoContainerView>
   );
 }

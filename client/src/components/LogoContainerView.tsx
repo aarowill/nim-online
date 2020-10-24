@@ -14,7 +14,7 @@ const LogoContainerView = ({ children }: { children: ReactNode }): ReactElement 
   return (
     <Container maxWidth="sm">
       <Box className={classes.root} display="flex" flexDirection="column">
-        <Box display="flex" flexDirection="column" marginY="auto">
+        <Box display="flex" flexDirection="column" marginY="auto" alignItems="center">
           <Logo />
           {children}
         </Box>
