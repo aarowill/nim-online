@@ -18,14 +18,21 @@ const useStyles = (theme: Theme) =>
 interface NumberPickerProps {
   largerIncrement?: boolean;
   label: string;
+  value: number;
+  onChange: (newValue: number) => void;
 }
 
 const NumberPicker: FunctionComponent<NumberPickerProps> = ({
   largerIncrement,
   label,
+  value,
+  onChange,
 }: NumberPickerProps): ReactElement => {
   const theme = useTheme();
   const classes = useStyles(theme)();
+  const updateValue = (change: number) => {
+    onChange(value + change);
+  };
 
   return (
     <FormControl>
@@ -34,27 +41,64 @@ const NumberPicker: FunctionComponent<NumberPickerProps> = ({
         <Grid container spacing={2}>
           <Grid item xs>
             {largerIncrement && (
-              <Button className={classes.smallButton} fullWidth variant="contained" color="secondary">
+              <Button
+                className={classes.smallButton}
+                fullWidth
+                variant="contained"
+                color="secondary"
+                onClick={() => updateValue(-5)}
+              >
                 –5
               </Button>
             )}
           </Grid>
           <Grid item xs>
-            <Button className={classes.smallButton} fullWidth variant="contained" color="secondary">
+            <Button
+              className={classes.smallButton}
+              fullWidth
+              variant="contained"
+              color="secondary"
+              onClick={() => updateValue(-1)}
+            >
               <RemoveIcon />
             </Button>
           </Grid>
           <Grid item xs>
-            <Input inputProps={{ className: classes.centeredInput }} type="number" />
+            <Input
+              inputProps={{ className: classes.centeredInput }}
+              type="number"
+              value={value}
+              onChange={(event) => {
+                const result = Number.parseInt(event.target.value, 10);
+
+                if (Number.isNaN(result)) {
+                  onChange(value);
+                } else {
+                  onChange(result);
+                }
+              }}
+            />
           </Grid>
           <Grid item xs>
-            <Button className={classes.smallButton} fullWidth variant="contained" color="secondary">
+            <Button
+              className={classes.smallButton}
+              fullWidth
+              variant="contained"
+              color="secondary"
+              onClick={() => updateValue(1)}
+            >
               <AddIcon />
             </Button>
           </Grid>
           <Grid item xs>
             {largerIncrement && (
-              <Button className={classes.smallButton} fullWidth variant="contained" color="secondary">
+              <Button
+                className={classes.smallButton}
+                fullWidth
+                variant="contained"
+                color="secondary"
+                onClick={() => updateValue(5)}
+              >
                 +5
               </Button>
             )}

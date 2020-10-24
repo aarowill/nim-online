@@ -11,6 +11,8 @@ const serverUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:300
 
 const socket = io(serverUrl, {
   path: '/api',
+  reconnectionAttempts: 5,
+  timeout: 10000,
 });
 
 const App = (): ReactElement => {

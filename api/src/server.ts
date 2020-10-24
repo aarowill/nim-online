@@ -20,10 +20,11 @@ const server = http.createServer((req, res) => {
 // Socket.io
 const io = socketio(server, { path: '/api' });
 io.sockets.on('connect', (socket) => {
-  logger.info('Got connection!');
+  logger.info(`Got connection! ${socket.id}`);
+
   Object.entries(eventHandlers).forEach(([event, handler]) => {
-    socket.on(event, (data /* , callback */) => {
-      handler(socket, data /* , callback */);
+    socket.on(event, () => {
+      handler(socket);
     });
   });
 });

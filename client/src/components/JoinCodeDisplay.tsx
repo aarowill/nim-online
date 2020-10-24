@@ -31,16 +31,21 @@ function waitingToStart() {
 }
 
 function JoinCodeDisplay({ socket }: JoinCodeDisplayProps) {
-  const [joinCode] = useState<string | undefined>();
+  const [joinCode, setJoinCode] = useState<string | undefined>();
   const [player2Ready] = useState(false);
 
   useEffect(() => {
     if (socket == null) {
-      console.log('socket aint there');
       return;
     }
-    console.log('in use effect');
+
+    // Request a new game
     socket.emit('newGame');
+
+    // After requesting a new game, server responds with join code
+    socket.on('joinCode', (gameJoinCode: string) => {
+      setJoinCode(gameJoinCode);
+    });
   }, [socket]);
 
   return player2Ready ? waitingToStart() : codeReady(joinCode);
