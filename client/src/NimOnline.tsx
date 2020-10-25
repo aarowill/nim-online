@@ -9,7 +9,7 @@ import SocketContext from './SocketContext';
 import NotFound from './pages/NotFound';
 import Game from './pages/Game';
 
-const serverUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'prodserver';
+const serverUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://nim-online.aarowill.ca';
 
 const socket = io(serverUrl, {
   path: '/api/socket',

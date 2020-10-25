@@ -1,0 +1,30 @@
+version: "3.8"
+
+networks:
+  web:
+    external: true
+
+volumes:
+  caddy_storage:
+  caddy_config:
+
+services:
+  nim-api:
+    image: "aarowill/nim-api"
+    container_name: "nim-api"
+    networks:
+      - web
+    depends_on:
+      - "caddy"
+    restart: always
+  nim-caddy:
+    image: "aarowill/nim-caddy"
+    container_name: "nim-caddy"
+    networks:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_storage:/data
+      - caddy_config:/config

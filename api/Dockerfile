@@ -14,6 +14,7 @@ COPY --chown=node:node . .
 
 RUN npm run build
 
-EXPOSE 8081
+HEALTHCHECK --timeout=3s --start-period=10s CMD node health-check.js
 
+EXPOSE 8081
 CMD ["npm", "start"]

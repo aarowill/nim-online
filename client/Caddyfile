@@ -1,0 +1,15 @@
+{
+    email certificates@aarowill.ca
+}
+
+# Health check endpoint
+:8080 {
+    status 200/
+}
+
+nim-online.aarowill.ca {
+    root * /srv
+    reverse_proxy /api/* nim-api:8081
+    file_server
+    encode zstd gzip
+}
