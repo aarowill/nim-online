@@ -1,9 +1,14 @@
 import React, { ReactElement, useEffect, useState } from 'react';
 import { FormControl, TextField, Box, Typography } from '@material-ui/core';
 import SocketContext from '../SocketContext';
+import { NewGameResponse } from '../interfaces/event-response';
 
 interface JoinCodeDisplayProps {
-  socket?: SocketIOClient.Socket;
+  player2Ready: boolean;
+}
+
+interface JoinCodeDisplayWithSocketProps extends JoinCodeDisplayProps {
+  socket: SocketIOClient.Socket | undefined;
 }
 
 function codeReady(code: string | undefined) {
@@ -30,9 +35,8 @@ function waitingToStart() {
   );
 }
 
-function JoinCodeDisplay({ socket }: JoinCodeDisplayProps) {
+function JoinCodeDisplay({ socket, player2Ready }: JoinCodeDisplayWithSocketProps) {
   const [joinCode, setJoinCode] = useState<string | undefined>();
-  const [player2Ready] = useState(false);
 
   useEffect(() => {
     if (socket == null) {
@@ -40,19 +44,18 @@ function JoinCodeDisplay({ socket }: JoinCodeDisplayProps) {
     }
 
     // Request a new game
-    socket.emit('newGame');
-
-    // After requesting a new game, server responds with join code
-    socket.on('joinCode', (gameJoinCode: string) => {
-      setJoinCode(gameJoinCode);
+    socket.emit('newGame', ({ joinCode: responseJoinCode }: NewGameResponse) => {
+      setJoinCode(responseJoinCode);
     });
   }, [socket]);
 
   return player2Ready ? waitingToStart() : codeReady(joinCode);
 }
 
-function JoinCodeDisplayWithSocket(): ReactElement {
-  return <SocketContext.Consumer>{(socket) => <JoinCodeDisplay socket={socket} />}</SocketContext.Consumer>;
+function JoinCodeDisplayWithSocket(props: JoinCodeDisplayProps): ReactElement {
+  // Justification: This is a higher order component
+  // eslint-disable-next-line react/jsx-props-no-spreading
+  return <SocketContext.Consumer>{(socket) => <JoinCodeDisplay {...props} socket={socket} />}</SocketContext.Consumer>;
 }
 
 export default JoinCodeDisplayWithSocket;

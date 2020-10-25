@@ -2,14 +2,12 @@ import http from 'http';
 import socketio from 'socket.io';
 import eventHandlers from '@src/event-handlers';
 
-import logger from '@shared/logger';
-
 // Create HTTP server
 const server = http.createServer((req, res) => {
   // Set CORS options
   res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' ? 'prodserver' : '*');
   res.setHeader('Access-Control-Max-Age', 600);
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 
   if (req.method === 'OPTIONS') {
     res.writeHead(200);
@@ -20,12 +18,8 @@ const server = http.createServer((req, res) => {
 // Socket.io
 const io = socketio(server, { path: '/api' });
 io.sockets.on('connect', (socket) => {
-  logger.info(`Got connection! ${socket.id}`);
-
   Object.entries(eventHandlers).forEach(([event, handler]) => {
-    socket.on(event, () => {
-      handler(socket);
-    });
+    socket.on(event, handler(socket));
   });
 });
 

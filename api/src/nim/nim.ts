@@ -12,7 +12,7 @@ export interface NimGame {
 /**
  * Options for a new game of Nim.
  */
-interface NimOptions {
+export interface NimOptions {
   firstTurn?: 0 | 1;
   numberOfSticks?: number;
   maxPickupPerTurn?: number;

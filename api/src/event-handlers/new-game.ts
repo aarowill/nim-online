@@ -1,27 +1,12 @@
-import logger from '@shared/logger';
+import { createNewGame } from '@src/game-manager';
+import { NewGameResponse } from './event-response';
 
-const RANDOM_ROOM_NAME_LENGTH = 6;
+const newGame = (socket: SocketIO.Socket) => (responseCallback: (response: NewGameResponse) => void): void => {
+  const roomName = createNewGame(socket.id);
 
-function generateRandomRoom(): string {
-  const result = [];
-  const characterSet = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-  const length = RANDOM_ROOM_NAME_LENGTH;
-
-  for (let i = 0; i < length; i += 1) {
-    result.push(characterSet[Math.floor(Math.random() * characterSet.length)]);
-  }
-
-  return result.join('');
-}
-
-const newGame = (socket: SocketIO.Socket): void => {
-  const roomName = generateRandomRoom();
-  logger.info(`New room: ${roomName}`);
   socket.join(roomName);
 
-  socket.emit('joinCode', roomName);
+  responseCallback({ success: true, joinCode: roomName });
 };
 
-export default {
-  newGame,
-};
+export default newGame;

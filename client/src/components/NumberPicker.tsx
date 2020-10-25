@@ -1,5 +1,16 @@
-import React, { ReactElement, FunctionComponent } from 'react';
-import { FormControl, FormLabel, Button, Input, Grid, makeStyles, Box, Theme, useTheme } from '@material-ui/core';
+import React, { ReactElement, FunctionComponent, useState } from 'react';
+import {
+  FormControl,
+  FormLabel,
+  Button,
+  Input,
+  Grid,
+  makeStyles,
+  Box,
+  Theme,
+  useTheme,
+  FormHelperText,
+} from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 
@@ -18,24 +29,45 @@ const useStyles = (theme: Theme) =>
 interface NumberPickerProps {
   largerIncrement?: boolean;
   label: string;
+  name: string;
+  min: number;
+  max: number;
   value: number;
+  valid: boolean;
   onChange: (newValue: number) => void;
+  setIsValid: (newValue: boolean) => void;
 }
 
 const NumberPicker: FunctionComponent<NumberPickerProps> = ({
   largerIncrement,
   label,
+  name,
+  min,
+  max,
   value,
+  valid,
   onChange,
+  setIsValid,
 }: NumberPickerProps): ReactElement => {
   const theme = useTheme();
   const classes = useStyles(theme)();
+  const [errorMessage, setErrorMessage] = useState<undefined | string>(undefined);
+
   const updateValue = (change: number) => {
-    onChange(value + change);
+    let newValue = value + change;
+
+    if (newValue > max) {
+      newValue = max;
+    } else if (newValue < min) {
+      newValue = min;
+    }
+
+    setIsValid(true);
+    onChange(newValue);
   };
 
   return (
-    <FormControl>
+    <FormControl error={!valid}>
       <FormLabel>{label}</FormLabel>
       <Box marginY={1}>
         <Grid container spacing={2}>
@@ -46,6 +78,7 @@ const NumberPicker: FunctionComponent<NumberPickerProps> = ({
                 fullWidth
                 variant="contained"
                 color="secondary"
+                type="button"
                 onClick={() => updateValue(-5)}
               >
                 –5
@@ -58,7 +91,10 @@ const NumberPicker: FunctionComponent<NumberPickerProps> = ({
               fullWidth
               variant="contained"
               color="secondary"
-              onClick={() => updateValue(-1)}
+              type="button"
+              onClick={() => {
+                updateValue(-1);
+              }}
             >
               <RemoveIcon />
             </Button>
@@ -67,15 +103,25 @@ const NumberPicker: FunctionComponent<NumberPickerProps> = ({
             <Input
               inputProps={{ className: classes.centeredInput }}
               type="number"
+              name={name}
               value={value}
               onChange={(event) => {
                 const result = Number.parseInt(event.target.value, 10);
 
                 if (Number.isNaN(result)) {
-                  onChange(value);
+                  setErrorMessage('Not a number. This must be a number.');
+                  setIsValid(false);
+                } else if (result > max) {
+                  setErrorMessage(`Maximum is ${max}`);
+                  setIsValid(false);
+                } else if (result < min) {
+                  setErrorMessage(`Minimum is ${min}`);
+                  setIsValid(false);
                 } else {
-                  onChange(result);
+                  setIsValid(true);
                 }
+
+                onChange(result);
               }}
             />
           </Grid>
@@ -85,7 +131,10 @@ const NumberPicker: FunctionComponent<NumberPickerProps> = ({
               fullWidth
               variant="contained"
               color="secondary"
-              onClick={() => updateValue(1)}
+              type="button"
+              onClick={() => {
+                updateValue(1);
+              }}
             >
               <AddIcon />
             </Button>
@@ -97,6 +146,7 @@ const NumberPicker: FunctionComponent<NumberPickerProps> = ({
                 fullWidth
                 variant="contained"
                 color="secondary"
+                type="button"
                 onClick={() => updateValue(5)}
               >
                 +5
@@ -104,6 +154,9 @@ const NumberPicker: FunctionComponent<NumberPickerProps> = ({
             )}
           </Grid>
         </Grid>
+      </Box>
+      <Box display={valid ? 'none' : 'block'}>
+        <FormHelperText>{errorMessage}</FormHelperText>
       </Box>
     </FormControl>
   );

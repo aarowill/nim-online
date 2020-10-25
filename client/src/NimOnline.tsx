@@ -6,6 +6,8 @@ import NewGame from './pages/NewGame';
 import JoinGame from './pages/JoinGame';
 import Landing from './pages/Landing';
 import SocketContext from './SocketContext';
+import NotFound from './pages/NotFound';
+import Game from './pages/Game';
 
 const serverUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'prodserver';
 
@@ -22,14 +24,20 @@ const App = (): ReactElement => {
       <SocketContext.Provider value={socket}>
         <Router>
           <Switch>
-            <Route path="/new-game">
+            <Route exact path="/new-game">
               <NewGame />
             </Route>
-            <Route path="/join-game">
+            <Route exact path="/join-game">
               <JoinGame />
             </Route>
-            <Route path="/">
+            <Route exact path="/game">
+              <Game />
+            </Route>
+            <Route exact path="/">
               <Landing />
+            </Route>
+            <Route>
+              <NotFound />
             </Route>
           </Switch>
         </Router>
