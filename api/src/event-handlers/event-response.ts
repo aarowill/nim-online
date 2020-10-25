@@ -13,6 +13,10 @@ export interface StartGameResponse extends SuccessResponse {
   gameCode: string;
 }
 
+export interface DoTurnResponse extends SuccessResponse {
+  game: NimGame;
+}
+
 export interface ErrorResponse {
   success: false;
   errorMessage: string;

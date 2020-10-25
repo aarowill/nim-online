@@ -13,6 +13,7 @@ import {
 import NumberPicker from './NumberPicker';
 import SocketContext from '../SocketContext';
 import { ErrorResponse, StartGameResponse } from '../interfaces/event-response';
+import { GameRedirectState } from '../interfaces/game-redirect-state';
 
 const MAX_NUMBER_OF_STICKS = 35;
 const MIN_NUMBER_OF_STICKS = 5;
@@ -44,8 +45,10 @@ function GameConfiguration({ socket, player2Ready }: GameConfigurationWithSocket
   const [numberOfSticksValid, setNumberOfSticksValid] = useState(true);
   const [perTurnPickupValid, setPerTurnPickupValid] = useState(true);
 
+  const formIsValid = numberOfSticksValid && perTurnPickupValid && player2Ready;
+
   const startGame = () => {
-    if (socket == null || !numberOfSticksValid || !perTurnPickupValid || !player2Ready) {
+    if (socket == null || !formIsValid) {
       return;
     }
 
@@ -62,15 +65,21 @@ function GameConfiguration({ socket, player2Ready }: GameConfigurationWithSocket
         return;
       }
 
-      history.push(`/game?code=${response.gameCode}`, { game: response.game });
+      const redirectState: GameRedirectState = {
+        game: response.game,
+        player: 0,
+      };
+
+      history.push(`/game?code=${response.gameCode}`, redirectState);
     });
   };
 
   return (
-    <Box maxWidth="290px">
+    <Box maxWidth="24rem">
       <form
         onSubmit={(event) => {
           event.preventDefault();
+
           startGame();
         }}
         autoComplete="off"
@@ -141,12 +150,7 @@ function GameConfiguration({ socket, player2Ready }: GameConfigurationWithSocket
             </RadioGroup>
           </FormControl>
           <Box display="flex" justifyContent="center" marginTop={0.5}>
-            <Button
-              disabled={!numberOfSticksValid || !perTurnPickupValid || !player2Ready}
-              variant="contained"
-              color="primary"
-              type="submit"
-            >
+            <Button disabled={!formIsValid} variant="contained" color="primary" type="submit">
               Start
             </Button>
           </Box>

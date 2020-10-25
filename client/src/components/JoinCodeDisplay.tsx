@@ -29,7 +29,7 @@ function codeReady(code: string | undefined) {
 
 function waitingToStart() {
   return (
-    <Box display="flex" alignItems="center" minHeight="56px" marginTop={-2} marginBottom={1}>
+    <Box display="flex" alignItems="center" minHeight="3.5rem" marginTop={-2} marginBottom={1}>
       <Typography variant="body1">Player 2 is ready!</Typography>
     </Box>
   );

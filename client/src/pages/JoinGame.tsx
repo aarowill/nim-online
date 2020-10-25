@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { ClimbingBoxLoader } from 'react-spinners';
 import LogoContainerView from '../components/LogoContainerView';
 import { ErrorResponse, SuccessResponse } from '../interfaces/event-response';
+import { GameRedirectState } from '../interfaces/game-redirect-state';
 import { NimGame } from '../interfaces/nim';
 import SocketContext from '../SocketContext';
 
@@ -29,9 +30,14 @@ function JoinGame({ socket }: JoinGameProps) {
     }
 
     socket.on('gameStarted', (gameState: NimGame) => {
-      history.push(`/game?code=${joinCode}`, { game: gameState });
+      const redirectState: GameRedirectState = {
+        game: gameState,
+        player: 1,
+      };
+
+      history.push(`/game?code=${joinCode}`, redirectState);
     });
-  });
+  }, [history, joinCode, socket]);
 
   function tryJoin() {
     if (socket == null) {

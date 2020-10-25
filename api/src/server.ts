@@ -34,5 +34,4 @@ io.sockets.on('connect', (socket) => {
   });
 });
 
-// Export the server
 export default server;

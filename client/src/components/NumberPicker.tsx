@@ -28,7 +28,7 @@ const useStyles = (theme: Theme) =>
 
 interface NumberPickerProps {
   largerIncrement?: boolean;
-  label: string;
+  label?: string | undefined;
   name: string;
   min: number;
   max: number;
@@ -68,7 +68,7 @@ const NumberPicker: FunctionComponent<NumberPickerProps> = ({
 
   return (
     <FormControl error={!valid}>
-      <FormLabel>{label}</FormLabel>
+      {label !== undefined && <FormLabel>{label}</FormLabel>}
       <Box marginY={1}>
         <Grid container spacing={2}>
           <Grid item xs>
@@ -164,6 +164,7 @@ const NumberPicker: FunctionComponent<NumberPickerProps> = ({
 
 NumberPicker.defaultProps = {
   largerIncrement: false,
+  label: undefined,
 };
 
 export default NumberPicker;

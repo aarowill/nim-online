@@ -17,7 +17,7 @@ function NewGame({ socket }: NewGameProps): ReactElement {
     }
 
     socket.on('playerJoined', () => setPlayer2Ready(true));
-  });
+  }, [socket]);
 
   return (
     <LogoContainerView>

@@ -1,5 +1,5 @@
 import logger from '@shared/logger';
-import { newGameState, NimGame, NimOptions } from './nim/nim';
+import { doTurn, newGameState, NimGame, NimOptions } from './nim/nim';
 
 const RANDOM_ROOM_NAME_LENGTH = 6;
 
@@ -94,16 +94,41 @@ export const startGame = (code: string, options: NimOptions): NimGame | Error =>
   return room.game;
 };
 
-export const updateGame = (code: string, game: NimGame): Error | void => {
+/**
+ * Do a turn in the game with the given code on behalf of the player with the given ID.
+ * @param code The code of the game to do the turn in
+ * @param playerId The ID of the player doing the turn
+ * @param sticksToPickUp How many sticks the player is picking up
+ * @returns NimGame or Error if doing the turn failed
+ */
+export const doGameTurn = (code: string, playerId: string, sticksToPickUp: number): NimGame | Error => {
   const room = gameRooms.get(code);
 
   if (room == null) {
     return new Error('A game with that code does not exist');
   }
 
-  const storedGame = { ...game, currentMembers: room.currentMembers };
+  if (room.player1Id == null || room.player2Id == null) {
+    return new Error('The room is missing players');
+  }
 
-  gameRooms.set(code, storedGame);
+  if (room.game == null) {
+    return new Error('The room with that code has not started its game yet');
+  }
+
+  const targetPlayerId = room.game.currentPlayerTurn === 0 ? room.player1Id : room.player2Id;
+
+  if (playerId !== targetPlayerId) {
+    return new Error('Player tried to do turn out of order');
+  }
+
+  try {
+    room.game = doTurn(room.game, sticksToPickUp);
+  } catch (e) {
+    return e as Error;
+  }
+
+  return room.game;
 };
 
 export const userLeftGame = (code: string): void => {
