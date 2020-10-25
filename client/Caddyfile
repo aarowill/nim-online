@@ -4,7 +4,7 @@
 
 # Health check endpoint
 :8080 {
-    status 200/
+    respond /health 200
 }
 
 nim-online.aarowill.ca {

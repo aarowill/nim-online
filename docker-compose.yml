@@ -15,7 +15,7 @@ services:
     networks:
       - web
     depends_on:
-      - "caddy"
+      - "nim-caddy"
     restart: always
   nim-caddy:
     image: "aarowill/nim-caddy"
