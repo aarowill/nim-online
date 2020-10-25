@@ -5,12 +5,19 @@ import eventHandlers from '@src/event-handlers';
 // Create HTTP server
 const server = http.createServer((req, res) => {
   // Set CORS options
-  res.setHeader('Access-Control-Allow-Origin', process.env.NODE_ENV === 'production' ? 'prodserver' : '*');
+  res.setHeader('Access-Control-Allow-Origin', process.env.ALLOW_ORIGIN || '*');
   res.setHeader('Access-Control-Max-Age', 600);
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
 
   if (req.method === 'OPTIONS') {
     res.writeHead(200);
+    res.end();
+  }
+
+  // Simple health check endpoint
+  if (req.method === 'GET' && req.url === '/api/health') {
+    res.writeHead(200);
+    res.write('OK');
     res.end();
   }
 });
