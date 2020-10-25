@@ -12,7 +12,7 @@ import Game from './pages/Game';
 const serverUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'prodserver';
 
 const socket = io(serverUrl, {
-  path: '/api',
+  path: '/api/socket',
   reconnectionAttempts: 5,
   timeout: 10000,
 });
