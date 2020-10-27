@@ -1,29 +1,70 @@
-import React, { ReactElement, useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { PureComponent, ReactElement } from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { ErrorResponse, NewGameResponse, StartGameResponse } from '../interfaces/eventResponse';
 import { NimOptions } from '../interfaces/nim';
 import { GameRedirectState } from '../interfaces/gameRedirectState';
-import emptyFunction from '../utilities/emptyFunction';
 import LogoContainerView from '../components/LogoContainerView';
 import GameConfiguration from '../components/GameConfiguration';
 import JoinCodeDisplay from '../components/JoinCodeDisplay';
 import SocketContext from '../SocketContext';
 
-interface NewGameWithSocketProps {
+interface NewGameWithSocketProps extends RouteComponentProps {
   socket: SocketIOClient.Socket | undefined;
 }
 
-function NewGameWithSocket({ socket }: NewGameWithSocketProps) {
-  // A little hacky to use a ref here but it's the only way to accomplish the starting game variable
-  // for clean on navigation (https://stackoverflow.com/a/53641229)
-  const startingGame = useRef(false);
+interface NewGameWithSocketState {
+  player2Ready: boolean;
+  joinCode: string | undefined;
+  startingGame: boolean;
+}
 
-  const history = useHistory();
+class NewGameWithSocket extends PureComponent<NewGameWithSocketProps, NewGameWithSocketState> {
+  constructor(props: NewGameWithSocketProps) {
+    super(props);
 
-  const [player2Ready, setPlayer2Ready] = useState(false);
-  const [joinCode, setJoinCode] = useState<string | undefined>();
+    this.state = {
+      player2Ready: false,
+      joinCode: undefined,
+      startingGame: false,
+    };
 
-  const startGame = (config: NimOptions) => {
+    this.handlePlayer2Ready = this.handlePlayer2Ready.bind(this);
+    this.startGame = this.startGame.bind(this);
+  }
+
+  componentDidMount() {
+    const { socket } = this.props;
+
+    if (socket == null) {
+      return;
+    }
+
+    socket.on('playerJoined', this.handlePlayer2Ready);
+
+    socket.emit('newGame', ({ joinCode }: NewGameResponse) => {
+      this.setState(() => ({
+        joinCode,
+      }));
+    });
+  }
+
+  componentWillUnmount() {
+    const { socket } = this.props;
+    const { startingGame } = this.state;
+
+    if (socket == null) {
+      return;
+    }
+
+    socket.off('playerJoined', this.handlePlayer2Ready);
+
+    if (!startingGame) {
+      socket.emit('playerLeft');
+    }
+  }
+
+  startGame(config: NimOptions) {
+    const { socket, history } = this.props;
     if (socket == null) {
       return;
     }
@@ -34,7 +75,9 @@ function NewGameWithSocket({ socket }: NewGameWithSocketProps) {
         return;
       }
 
-      startingGame.current = true;
+      this.setState(() => ({
+        startingGame: true,
+      }));
 
       const redirectState: GameRedirectState = {
         game: response.game,
@@ -43,43 +86,31 @@ function NewGameWithSocket({ socket }: NewGameWithSocketProps) {
 
       history.push(`/game?code=${response.gameCode}`, redirectState);
     });
-  };
+  }
 
-  useEffect(() => {
-    if (socket == null) {
-      return emptyFunction;
-    }
+  handlePlayer2Ready() {
+    this.setState(() => ({
+      player2Ready: true,
+    }));
+  }
 
-    const handlePlayer2Ready = () => {
-      setPlayer2Ready(true);
-    };
+  render() {
+    const { player2Ready, joinCode } = this.state;
+    return (
+      <LogoContainerView>
+        <JoinCodeDisplay player2Ready={player2Ready} joinCode={joinCode} />
+        <GameConfiguration player2Ready={player2Ready} onStartGame={(config) => this.startGame(config)} />
+      </LogoContainerView>
+    );
+  }
+}
 
-    socket.on('playerJoined', handlePlayer2Ready);
-
-    // Request a new game
-    socket.emit('newGame', ({ joinCode: responseJoinCode }: NewGameResponse) => {
-      setJoinCode(responseJoinCode);
-    });
-
-    return () => {
-      socket.off('playerJoined', handlePlayer2Ready);
-
-      if (!startingGame.current) {
-        socket.emit('playerLeft');
-      }
-    };
-  }, [socket, startingGame]);
-
+function NewGame(props: RouteComponentProps): ReactElement {
   return (
-    <LogoContainerView>
-      <JoinCodeDisplay player2Ready={player2Ready} joinCode={joinCode} />
-      <GameConfiguration player2Ready={player2Ready} onStartGame={startGame} />
-    </LogoContainerView>
+    // Justification: This is a higher order component
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    <SocketContext.Consumer>{(socket) => <NewGameWithSocket socket={socket} {...props} />}</SocketContext.Consumer>
   );
 }
 
-function NewGame(): ReactElement {
-  return <SocketContext.Consumer>{(socket) => <NewGameWithSocket socket={socket} />}</SocketContext.Consumer>;
-}
-
-export default NewGame;
+export default withRouter(NewGame);
