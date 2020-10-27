@@ -1,5 +1,5 @@
 import { Box, Button, TextField, Typography, useTheme } from '@material-ui/core';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ClimbingBoxLoader } from 'react-spinners';
 import LogoContainerView from '../components/LogoContainerView';
@@ -7,6 +7,7 @@ import { ErrorResponse, SuccessResponse } from '../interfaces/eventResponse';
 import { GameRedirectState } from '../interfaces/gameRedirectState';
 import { NimGame } from '../interfaces/nim';
 import SocketContext from '../SocketContext';
+import emptyFunction from '../utilities/emptyFunction';
 
 interface JoinGameWithSocketProps {
   socket: SocketIOClient.Socket | undefined;
@@ -16,28 +17,44 @@ const defaultHelperText = 'Enter code to join game';
 const validCodeRegex = /^[ABCDEFGHJKLMNPQRSTUVWXYZ]*$/;
 
 function JoinGameWithSocket({ socket }: JoinGameWithSocketProps) {
+  // A little hacky to use refs here but it's the only way to accomplish the starting game variable
+  // for clean on navigation (https://stackoverflow.com/a/53641229)
+  const startingGame = useRef(false);
+  const joinCode = useRef('');
+
   const history = useHistory();
   const theme = useTheme();
 
-  const [joinCode, setJoinCode] = useState('');
   const [isValid, setIsValid] = useState(true);
   const [helperText, setHelperText] = useState(defaultHelperText);
   const [gameJoined, setGameJoined] = useState(false);
 
   useEffect(() => {
     if (socket == null) {
-      return;
+      return emptyFunction;
     }
 
-    socket.on('gameStarted', (gameState: NimGame) => {
+    const handleGameStarted = (gameState: NimGame) => {
       const redirectState: GameRedirectState = {
         game: gameState,
         player: 1,
       };
 
-      history.push(`/game?code=${joinCode}`, redirectState);
-    });
-  }, [history, joinCode, socket]);
+      startingGame.current = true;
+
+      history.push(`/game?code=${joinCode.current}`, redirectState);
+    };
+
+    socket.on('gameStarted', handleGameStarted);
+
+    return () => {
+      socket.off('gameStarted', handleGameStarted);
+
+      if (!startingGame.current) {
+        socket.emit('playerLeft');
+      }
+    };
+  }, [history, socket]);
 
   function tryJoin() {
     if (socket == null) {
@@ -64,7 +81,7 @@ function JoinGameWithSocket({ socket }: JoinGameWithSocketProps) {
       setHelperText('Invalid join code');
     }
 
-    setJoinCode(value);
+    joinCode.current = value;
   }
 
   return (
@@ -94,13 +111,13 @@ function JoinGameWithSocket({ socket }: JoinGameWithSocketProps) {
                 error={!isValid}
                 required
                 autoFocus
-                value={joinCode}
+                value={joinCode.current}
                 onChange={(event) => updateJoinCode(event.target.value.toUpperCase().trim())}
                 helperText={helperText}
               />
               <Box marginTop={2}>
                 <Button
-                  disabled={!isValid || joinCode === ''}
+                  disabled={!isValid || joinCode.current === ''}
                   type="submit"
                   fullWidth
                   variant="contained"
