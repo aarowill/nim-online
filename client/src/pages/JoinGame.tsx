@@ -1,6 +1,7 @@
-import { Box, Button, TextField, Typography, useTheme } from '@material-ui/core';
-import React, { ReactElement, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Box, Button, TextField, Typography } from '@material-ui/core';
+import withTheme, { WithTheme } from '@material-ui/core/styles/withTheme';
+import React, { PureComponent, ReactElement } from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { ClimbingBoxLoader } from 'react-spinners';
 import LogoContainerView from '../components/LogoContainerView';
 import { ErrorResponse, SuccessResponse } from '../interfaces/eventResponse';
@@ -8,118 +9,172 @@ import { GameRedirectState } from '../interfaces/gameRedirectState';
 import { NimGame } from '../interfaces/nim';
 import SocketContext from '../SocketContext';
 
-interface JoinGameWithSocketProps {
-  socket: SocketIOClient.Socket | undefined;
-}
-
 const defaultHelperText = 'Enter code to join game';
 const validCodeRegex = /^[ABCDEFGHJKLMNPQRSTUVWXYZ]*$/;
 
-function JoinGameWithSocket({ socket }: JoinGameWithSocketProps) {
-  const history = useHistory();
-  const theme = useTheme();
+interface JoinGameProps extends RouteComponentProps, WithTheme {}
 
-  const [joinCode, setJoinCode] = useState('');
-  const [isValid, setIsValid] = useState(true);
-  const [helperText, setHelperText] = useState(defaultHelperText);
-  const [gameJoined, setGameJoined] = useState(false);
+interface JoinGameWithSocketProps extends JoinGameProps {
+  socket: SocketIOClient.Socket | undefined;
+}
 
-  useEffect(() => {
+interface JoinGameWithSocketState {
+  joinCode: string;
+  isValid: boolean;
+  helperText: string;
+  gameJoined: boolean;
+  startingGame: boolean;
+}
+
+class JoinGameWithSocket extends PureComponent<JoinGameWithSocketProps, JoinGameWithSocketState> {
+  constructor(props: JoinGameWithSocketProps) {
+    super(props);
+
+    this.state = {
+      joinCode: '',
+      isValid: true,
+      helperText: defaultHelperText,
+      gameJoined: false,
+      startingGame: false,
+    };
+
+    this.handleGameStarted = this.handleGameStarted.bind(this);
+    this.tryJoin = this.tryJoin.bind(this);
+    this.updateJoinCode = this.updateJoinCode.bind(this);
+  }
+
+  componentDidMount() {
+    const { socket } = this.props;
+
     if (socket == null) {
       return;
     }
 
-    socket.on('gameStarted', (gameState: NimGame) => {
-      const redirectState: GameRedirectState = {
-        game: gameState,
-        player: 1,
-      };
+    socket.on('gameStarted', this.handleGameStarted);
+  }
 
-      history.push(`/game?code=${joinCode}`, redirectState);
-    });
-  }, [history, joinCode, socket]);
+  componentWillUnmount() {
+    const { gameJoined, startingGame } = this.state;
+    const { socket } = this.props;
 
-  function tryJoin() {
+    if (socket == null) {
+      return;
+    }
+
+    socket.off('gameStarted', this.handleGameStarted);
+
+    if (!startingGame && gameJoined) {
+      socket.emit('playerLeft');
+    }
+  }
+
+  handleGameStarted(game: NimGame) {
+    const { joinCode } = this.state;
+    const { history } = this.props;
+
+    const redirectState: GameRedirectState = {
+      game,
+      player: 1,
+    };
+
+    this.setState(() => ({ startingGame: true }));
+
+    history.push(`/game?code=${joinCode}`, redirectState);
+  }
+
+  tryJoin() {
+    const { joinCode } = this.state;
+    const { socket } = this.props;
+
     if (socket == null) {
       return;
     }
 
     socket.emit('joinGame', { joinCode }, (response: SuccessResponse | ErrorResponse) => {
       if (!response.success) {
-        setIsValid(false);
-        setHelperText(response.errorMessage);
+        this.setState(() => ({
+          isValid: false,
+          helperText: response.errorMessage,
+        }));
         return;
       }
 
-      setGameJoined(true);
+      this.setState(() => ({ gameJoined: true }));
     });
   }
 
-  function updateJoinCode(value: string) {
-    if (validCodeRegex.test(value)) {
-      setIsValid(true);
-      setHelperText(defaultHelperText);
+  updateJoinCode(joinCode: string) {
+    if (validCodeRegex.test(joinCode)) {
+      this.setState(() => ({ isValid: true, helperText: defaultHelperText }));
     } else {
-      setIsValid(false);
-      setHelperText('Invalid join code');
+      this.setState(() => ({ isValid: false, helperText: 'Invalid join code' }));
     }
 
-    setJoinCode(value);
+    this.setState(() => ({ joinCode }));
   }
 
-  return (
-    <LogoContainerView>
-      {gameJoined && (
-        <>
-          <Box marginY={2}>
-            <Typography variant="h5">Waiting for player 1 to start the game...</Typography>
-          </Box>
-          <ClimbingBoxLoader color={theme.palette.primary.main} />
-        </>
-      )}
-      {!gameJoined && (
-        <Box marginTop={2}>
-          <form
-            onSubmit={(event) => {
-              event.preventDefault();
-              tryJoin();
-            }}
-            autoComplete="off"
-          >
-            <Box display="flex" flexDirection="column">
-              <TextField
-                variant="filled"
-                label="Join Code"
-                name="joinCode"
-                error={!isValid}
-                required
-                autoFocus
-                value={joinCode}
-                onChange={(event) => updateJoinCode(event.target.value.toUpperCase().trim())}
-                helperText={helperText}
-              />
-              <Box marginTop={2}>
-                <Button
-                  disabled={!isValid || joinCode === ''}
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                >
-                  Join
-                </Button>
-              </Box>
+  render() {
+    const { gameJoined, isValid, joinCode, helperText } = this.state;
+    const { theme } = this.props;
+
+    return (
+      <LogoContainerView>
+        {gameJoined && (
+          <>
+            <Box marginY={2}>
+              <Typography variant="h5">Waiting for player 1 to start the game...</Typography>
             </Box>
-          </form>
-        </Box>
-      )}
-    </LogoContainerView>
+            <ClimbingBoxLoader color={theme?.palette.primary.main} />
+          </>
+        )}
+        {!gameJoined && (
+          <Box marginTop={2}>
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                this.tryJoin();
+              }}
+              autoComplete="off"
+            >
+              <Box display="flex" flexDirection="column">
+                <TextField
+                  variant="filled"
+                  label="Join Code"
+                  name="joinCode"
+                  error={!isValid}
+                  required
+                  autoFocus
+                  value={joinCode}
+                  onChange={(event) => this.updateJoinCode(event.target.value.toUpperCase().trim())}
+                  helperText={helperText}
+                />
+                <Box marginTop={2}>
+                  <Button
+                    disabled={!isValid || joinCode === ''}
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                  >
+                    Join
+                  </Button>
+                </Box>
+              </Box>
+            </form>
+          </Box>
+        )}
+      </LogoContainerView>
+    );
+  }
+}
+
+function JoinGame(props: JoinGameProps): ReactElement {
+  return (
+    // Justification: This is a higher order component
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    <SocketContext.Consumer>{(socket) => <JoinGameWithSocket socket={socket} {...props} />}</SocketContext.Consumer>
   );
 }
 
-function JoinGame(): ReactElement {
-  return <SocketContext.Consumer>{(socket) => <JoinGameWithSocket socket={socket} />}</SocketContext.Consumer>;
-}
-
-export default JoinGame;
+export default withRouter(withTheme(JoinGame));

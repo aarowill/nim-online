@@ -42,9 +42,7 @@ class NewGameWithSocket extends PureComponent<NewGameWithSocketProps, NewGameWit
     socket.on('playerJoined', this.handlePlayer2Ready);
 
     socket.emit('newGame', ({ joinCode }: NewGameResponse) => {
-      this.setState(() => ({
-        joinCode,
-      }));
+      this.setState(() => ({ joinCode }));
     });
   }
 
@@ -75,9 +73,7 @@ class NewGameWithSocket extends PureComponent<NewGameWithSocketProps, NewGameWit
         return;
       }
 
-      this.setState(() => ({
-        startingGame: true,
-      }));
+      this.setState(() => ({ startingGame: true }));
 
       const redirectState: GameRedirectState = {
         game: response.game,
@@ -89,9 +85,7 @@ class NewGameWithSocket extends PureComponent<NewGameWithSocketProps, NewGameWit
   }
 
   handlePlayer2Ready() {
-    this.setState(() => ({
-      player2Ready: true,
-    }));
+    this.setState(() => ({ player2Ready: true }));
   }
 
   render() {
