@@ -1,5 +1,5 @@
 import { Box, Button, Typography, useTheme } from '@material-ui/core';
-import React, { ReactElement, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import { PuffLoader } from 'react-spinners';
 import NumberPicker from './NumberPicker';
 
@@ -23,6 +23,10 @@ function GameControls({ sticks, maxPerTurn, currentPlayer, currentTurn, submitTu
   const [numberPickedValid, setNumberPickedValid] = useState(true);
 
   const numberPickedText = Number.isNaN(numberPicked) ? '?' : numberPicked.toString();
+
+  useEffect(() => {
+    setNumberPicked(n => Math.min(n, maxPerTurn, sticks));
+  }, [currentTurn, maxPerTurn, sticks]);
 
   return (
     <>
