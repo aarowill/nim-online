@@ -8,3 +8,13 @@ export interface NimGame {
   lastStickOnTurnLoses: boolean;
   winner: 0 | 1 | undefined;
 }
+
+/**
+ * Options for a new game of Nim.
+ */
+export interface NimOptions {
+  firstTurn?: 0 | 1;
+  numberOfSticks?: number;
+  maxPickupPerTurn?: number;
+  lastStickOnTurnLoses?: boolean;
+}

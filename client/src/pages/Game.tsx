@@ -5,8 +5,8 @@ import GameBoard from '../components/GameBoard';
 import GameControls from '../components/GameControls';
 import GameResult from '../components/GameResult';
 import Logo from '../components/Logo';
-import { DoTurnResponse, ErrorResponse } from '../interfaces/event-response';
-import { GameRedirectState } from '../interfaces/game-redirect-state';
+import { DoTurnResponse, ErrorResponse } from '../interfaces/eventResponse';
+import { GameRedirectState } from '../interfaces/gameRedirectState';
 import { NimGame } from '../interfaces/nim';
 import SocketContext from '../SocketContext';
 

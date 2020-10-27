@@ -1,5 +1,4 @@
 import React, { ReactElement, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import {
   Typography,
   FormControl,
@@ -11,9 +10,7 @@ import {
   Box,
 } from '@material-ui/core';
 import NumberPicker from './NumberPicker';
-import SocketContext from '../SocketContext';
-import { ErrorResponse, StartGameResponse } from '../interfaces/event-response';
-import { GameRedirectState } from '../interfaces/game-redirect-state';
+import { NimOptions } from '../interfaces/nim';
 
 const MAX_NUMBER_OF_STICKS = 35;
 const MIN_NUMBER_OF_STICKS = 5;
@@ -22,22 +19,10 @@ const MIN_PICKUP_PER_TURN = 2;
 
 interface GameConfigurationProps {
   player2Ready: boolean;
+  onStartGame: (config: NimOptions) => void;
 }
 
-interface GameConfigurationWithSocketProps extends GameConfigurationProps {
-  socket: SocketIOClient.Socket | undefined;
-}
-
-interface GameConfigurationParams {
-  firstTurn?: 0 | 1;
-  numberOfSticks?: number;
-  maxPickupPerTurn?: number;
-  lastStickOnTurnLoses?: boolean;
-}
-
-function GameConfiguration({ socket, player2Ready }: GameConfigurationWithSocketProps) {
-  const history = useHistory();
-
+function GameConfiguration({ player2Ready, onStartGame }: GameConfigurationProps): ReactElement {
   const [firstToMove, setFirstToMove] = useState(0);
   const [numberOfSticks, setNumberOfSticks] = useState(20);
   const [perTurnPickup, setPerTurnPickup] = useState(3);
@@ -48,30 +33,18 @@ function GameConfiguration({ socket, player2Ready }: GameConfigurationWithSocket
   const formIsValid = numberOfSticksValid && perTurnPickupValid && player2Ready;
 
   const startGame = () => {
-    if (socket == null || !formIsValid) {
+    if (!formIsValid) {
       return;
     }
 
-    const gameConfig: GameConfigurationParams = {
+    const gameConfig: NimOptions = {
       firstTurn: firstToMove as 0 | 1,
       numberOfSticks,
       maxPickupPerTurn: perTurnPickup,
       lastStickOnTurnLoses: lastStickLoses,
     };
 
-    socket.emit('startGame', gameConfig, (response: StartGameResponse | ErrorResponse) => {
-      if (!response.success) {
-        // TODO: do something with this error
-        return;
-      }
-
-      const redirectState: GameRedirectState = {
-        game: response.game,
-        player: 0,
-      };
-
-      history.push(`/game?code=${response.gameCode}`, redirectState);
-    });
+    onStartGame(gameConfig);
   };
 
   return (
@@ -160,12 +133,4 @@ function GameConfiguration({ socket, player2Ready }: GameConfigurationWithSocket
   );
 }
 
-function GameConfigurationWithSocket(props: GameConfigurationProps): ReactElement {
-  return (
-    // Justification: This is a higher order component
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    <SocketContext.Consumer>{(socket) => <GameConfiguration {...props} socket={socket} />}</SocketContext.Consumer>
-  );
-}
-
-export default GameConfigurationWithSocket;
+export default GameConfiguration;

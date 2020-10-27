@@ -3,19 +3,19 @@ import React, { ReactElement, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ClimbingBoxLoader } from 'react-spinners';
 import LogoContainerView from '../components/LogoContainerView';
-import { ErrorResponse, SuccessResponse } from '../interfaces/event-response';
-import { GameRedirectState } from '../interfaces/game-redirect-state';
+import { ErrorResponse, SuccessResponse } from '../interfaces/eventResponse';
+import { GameRedirectState } from '../interfaces/gameRedirectState';
 import { NimGame } from '../interfaces/nim';
 import SocketContext from '../SocketContext';
 
-interface JoinGameProps {
+interface JoinGameWithSocketProps {
   socket: SocketIOClient.Socket | undefined;
 }
 
 const defaultHelperText = 'Enter code to join game';
 const validCodeRegex = /^[ABCDEFGHJKLMNPQRSTUVWXYZ]*$/;
 
-function JoinGame({ socket }: JoinGameProps) {
+function JoinGameWithSocket({ socket }: JoinGameWithSocketProps) {
   const history = useHistory();
   const theme = useTheme();
 
@@ -118,8 +118,8 @@ function JoinGame({ socket }: JoinGameProps) {
   );
 }
 
-function JoinGameWithSocket(): ReactElement {
-  return <SocketContext.Consumer>{(socket) => <JoinGame socket={socket} />}</SocketContext.Consumer>;
+function JoinGame(): ReactElement {
+  return <SocketContext.Consumer>{(socket) => <JoinGameWithSocket socket={socket} />}</SocketContext.Consumer>;
 }
 
-export default JoinGameWithSocket;
+export default JoinGame;
