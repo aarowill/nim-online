@@ -82,6 +82,7 @@ const NumberPicker: FunctionComponent<NumberPickerProps> = ({
         <Grid item xs>
           {largerIncrement && (
             <Button
+              aria-label="Minus five sticks"
               className={classes.smallButton}
               fullWidth
               variant="contained"
@@ -104,7 +105,7 @@ const NumberPicker: FunctionComponent<NumberPickerProps> = ({
               updateValue(-1);
             }}
           >
-            <RemoveIcon />
+            <RemoveIcon aria-label="Minus one stick" />
           </Button>
         </Grid>
         <Grid item xs>
@@ -145,12 +146,13 @@ const NumberPicker: FunctionComponent<NumberPickerProps> = ({
               updateValue(1);
             }}
           >
-            <AddIcon />
+            <AddIcon aria-label="Plus one stick" />
           </Button>
         </Grid>
         <Grid item xs>
           {largerIncrement && (
             <Button
+              aria-label="Plus five sticks"
               className={classes.smallButton}
               fullWidth
               variant="contained"

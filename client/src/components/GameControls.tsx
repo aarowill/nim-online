@@ -1,4 +1,5 @@
-import { Box, Button, Typography, useTheme } from '@material-ui/core';
+import { Box, Button, makeStyles, Popover, Theme, Typography, useTheme } from '@material-ui/core';
+import InfoIcon from '@material-ui/icons/Info';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { PuffLoader } from 'react-spinners';
 import NumberPicker from './NumberPicker';
@@ -6,13 +7,31 @@ import NumberPicker from './NumberPicker';
 interface GameControlsProps {
   sticks: number;
   maxPerTurn: number;
+  lastStickOnTurnLoses: boolean;
   currentPlayer: 0 | 1;
   currentTurn: 0 | 1;
   submitTurn: (numberToTake: number) => void;
 }
 
-function GameControls({ sticks, maxPerTurn, currentPlayer, currentTurn, submitTurn }: GameControlsProps): ReactElement {
+const useStyles = (theme: Theme) =>
+  makeStyles({
+    smallButton: {
+      minWidth: 0,
+      paddingLeft: theme.spacing(1),
+      paddingRight: theme.spacing(1),
+    },
+  });
+
+function GameControls({
+  sticks,
+  maxPerTurn,
+  lastStickOnTurnLoses,
+  currentPlayer,
+  currentTurn,
+  submitTurn,
+}: GameControlsProps): ReactElement {
   const theme = useTheme();
+  const classes = useStyles(theme)();
 
   const currentTurnNumber: number = currentTurn;
   const isCurrentTurn = currentPlayer === currentTurn;
@@ -21,8 +40,15 @@ function GameControls({ sticks, maxPerTurn, currentPlayer, currentTurn, submitTu
 
   const [numberPicked, setNumberPicked] = useState(1);
   const [numberPickedValid, setNumberPickedValid] = useState(true);
+  const [popoverAnchor, setPopoverAnchor] = useState<HTMLButtonElement | undefined>(undefined);
 
   const numberPickedText = Number.isNaN(numberPicked) ? '?' : numberPicked.toString();
+  const rulesPopoverOpen = Boolean(popoverAnchor);
+  const id = rulesPopoverOpen ? 'rules-popover' : undefined;
+
+  const handleRulesPopoverClick = (event: React.MouseEvent<HTMLButtonElement>) => setPopoverAnchor(event.currentTarget);
+
+  const handleRulesPopoverClose = () => setPopoverAnchor(undefined);
 
   useEffect(() => {
     setNumberPicked((n) => Math.min(n, maxPerTurn, sticks));
@@ -30,8 +56,39 @@ function GameControls({ sticks, maxPerTurn, currentPlayer, currentTurn, submitTu
 
   return (
     <>
-      <Box marginBottom={1}>
+      <Box marginBottom={1} display="flex" alignItems="center">
         <Typography variant="body1">{turnMessage}</Typography>
+        <Box marginLeft={2}>
+          <Button
+            className={classes.smallButton}
+            aria-describedby={id}
+            variant="outlined"
+            color="secondary"
+            onClick={handleRulesPopoverClick}
+          >
+            <InfoIcon aria-label="Game information" />
+          </Button>
+          <Popover
+            id={id}
+            open={rulesPopoverOpen}
+            anchorEl={popoverAnchor}
+            onClose={handleRulesPopoverClose}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          >
+            <Box padding={2}>
+              <Typography>
+                Sticks remaining: <strong>{sticks}</strong>
+              </Typography>
+              <Typography>
+                Each turn, you can pick up: <strong>1 to {maxPerTurn}</strong> sticks
+              </Typography>
+              <Typography>
+                If you pick up the last stick you: <strong>{lastStickOnTurnLoses ? 'lose' : 'win'}</strong>
+              </Typography>
+            </Box>
+          </Popover>
+        </Box>
       </Box>
 
       {isCurrentTurn && (

@@ -100,6 +100,7 @@ function Game({ socket }: GameWithSocketProps): ReactElement {
                 <GameControls
                   sticks={gameState.remainingSticks}
                   maxPerTurn={gameState.maxPickupPerTurn}
+                  lastStickOnTurnLoses={gameState.lastStickOnTurnLoses}
                   currentPlayer={player}
                   currentTurn={gameState.currentPlayerTurn}
                   submitTurn={submitTurn}
