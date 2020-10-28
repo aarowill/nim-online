@@ -25,12 +25,12 @@ function GameControls({ sticks, maxPerTurn, currentPlayer, currentTurn, submitTu
   const numberPickedText = Number.isNaN(numberPicked) ? '?' : numberPicked.toString();
 
   useEffect(() => {
-    setNumberPicked(n => Math.min(n, maxPerTurn, sticks));
+    setNumberPicked((n) => Math.min(n, maxPerTurn, sticks));
   }, [currentTurn, maxPerTurn, sticks]);
 
   return (
     <>
-      <Box marginBottom={2}>
+      <Box marginBottom={1}>
         <Typography variant="body1">{turnMessage}</Typography>
       </Box>
 
@@ -52,11 +52,12 @@ function GameControls({ sticks, maxPerTurn, currentPlayer, currentTurn, submitTu
               min={1}
               name="numberPicked"
               value={numberPicked}
-              onChange={setNumberPicked}
               valid={numberPickedValid}
+              onChange={setNumberPicked}
+              margin="none"
               setIsValid={setNumberPickedValid}
             />
-            <Box width="10rem" marginTop={2}>
+            <Box width="10rem" marginTop={1}>
               <Button disabled={!numberPickedValid} fullWidth type="submit" variant="contained" color="primary">
                 Take {numberPickedText} stick{numberPicked > 1 && 's'}
               </Button>

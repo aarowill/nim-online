@@ -131,17 +131,39 @@ export const doGameTurn = (code: string, playerId: string, sticksToPickUp: numbe
   return room.game;
 };
 
-export const userLeftGame = (code: string): void => {
+/**
+ * Update the room when a player leaves. Automatically remove rooms that have no players left.
+ *
+ * @param code The code of the room being left
+ * @param playerId The id of the player leaving the room
+ */
+export const playerLeftRoom = (code: string, playerId: string): 0 | 1 | null => {
   const game = gameRooms.get(code);
 
   if (game == null) {
     logger.warn('User left game that does not exist');
-    return;
+    return null;
+  }
+
+  let playerNumber: 0 | 1;
+
+  if (playerId === game.player1Id) {
+    playerNumber = 0;
+    game.player1Id = undefined;
+  } else if (playerId === game.player2Id) {
+    playerNumber = 1;
+    game.player2Id = undefined;
+  } else {
+    logger.warn('User left game they were not in');
+    return null;
   }
 
   game.currentMembers -= 1;
 
+  // Clean up empty rooms
   if (game.currentMembers <= 0) {
     gameRooms.delete(code);
   }
+
+  return playerNumber;
 };

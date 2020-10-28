@@ -29,6 +29,8 @@ const useStyles = (theme: Theme) =>
 interface NumberPickerProps {
   largerIncrement?: boolean;
   label?: string | undefined;
+  defaultHelperText?: string;
+  margin?: 'none' | 'dense' | 'normal';
   name: string;
   min: number;
   max: number;
@@ -46,12 +48,14 @@ const NumberPicker: FunctionComponent<NumberPickerProps> = ({
   max,
   value,
   valid,
+  defaultHelperText = '',
+  margin,
   onChange,
   setIsValid,
 }: NumberPickerProps): ReactElement => {
   const theme = useTheme();
   const classes = useStyles(theme)();
-  const [errorMessage, setErrorMessage] = useState<undefined | string>(undefined);
+  const [helperText, setHelperText] = useState<string>(defaultHelperText);
 
   const updateValue = (change: number) => {
     let newValue = value + change;
@@ -63,100 +67,104 @@ const NumberPicker: FunctionComponent<NumberPickerProps> = ({
     }
 
     setIsValid(true);
+    setHelperText(defaultHelperText);
     onChange(newValue);
   };
 
   return (
-    <FormControl error={!valid}>
-      {label !== undefined && <FormLabel>{label}</FormLabel>}
-      <Box marginY={1}>
-        <Grid container spacing={2}>
-          <Grid item xs>
-            {largerIncrement && (
-              <Button
-                className={classes.smallButton}
-                fullWidth
-                variant="contained"
-                color="secondary"
-                type="button"
-                onClick={() => updateValue(-5)}
-              >
-                –5
-              </Button>
-            )}
-          </Grid>
-          <Grid item xs>
+    <FormControl error={!valid} margin={margin}>
+      {label !== undefined && (
+        <Box marginBottom={1}>
+          <FormLabel>{label}</FormLabel>
+        </Box>
+      )}
+      <Grid container spacing={2}>
+        <Grid item xs>
+          {largerIncrement && (
             <Button
               className={classes.smallButton}
               fullWidth
               variant="contained"
               color="secondary"
               type="button"
-              onClick={() => {
-                updateValue(-1);
-              }}
+              onClick={() => updateValue(-5)}
             >
-              <RemoveIcon />
+              –5
             </Button>
-          </Grid>
-          <Grid item xs>
-            <Input
-              inputProps={{ className: classes.centeredInput }}
-              type="number"
-              name={name}
-              value={value}
-              onChange={(event) => {
-                const result = Number.parseInt(event.target.value, 10);
-
-                if (Number.isNaN(result)) {
-                  setErrorMessage('Not a number. This must be a number.');
-                  setIsValid(false);
-                } else if (result > max) {
-                  setErrorMessage(`Maximum is ${max}`);
-                  setIsValid(false);
-                } else if (result < min) {
-                  setErrorMessage(`Minimum is ${min}`);
-                  setIsValid(false);
-                } else {
-                  setIsValid(true);
-                }
-
-                onChange(result);
-              }}
-            />
-          </Grid>
-          <Grid item xs>
-            <Button
-              className={classes.smallButton}
-              fullWidth
-              variant="contained"
-              color="secondary"
-              type="button"
-              onClick={() => {
-                updateValue(1);
-              }}
-            >
-              <AddIcon />
-            </Button>
-          </Grid>
-          <Grid item xs>
-            {largerIncrement && (
-              <Button
-                className={classes.smallButton}
-                fullWidth
-                variant="contained"
-                color="secondary"
-                type="button"
-                onClick={() => updateValue(5)}
-              >
-                +5
-              </Button>
-            )}
-          </Grid>
+          )}
         </Grid>
-      </Box>
-      <Box display={valid ? 'none' : 'block'}>
-        <FormHelperText>{errorMessage}</FormHelperText>
+        <Grid item xs>
+          <Button
+            className={classes.smallButton}
+            fullWidth
+            variant="contained"
+            color="secondary"
+            type="button"
+            onClick={() => {
+              updateValue(-1);
+            }}
+          >
+            <RemoveIcon />
+          </Button>
+        </Grid>
+        <Grid item xs>
+          <Input
+            inputProps={{ className: classes.centeredInput }}
+            type="number"
+            name={name}
+            value={value}
+            onChange={(event) => {
+              const result = Number.parseInt(event.target.value, 10);
+
+              if (Number.isNaN(result)) {
+                setHelperText('Not a number. This must be a number.');
+                setIsValid(false);
+              } else if (result > max) {
+                setHelperText(`Maximum is ${max}`);
+                setIsValid(false);
+              } else if (result < min) {
+                setHelperText(`Minimum is ${min}`);
+                setIsValid(false);
+              } else {
+                setHelperText(defaultHelperText);
+                setIsValid(true);
+              }
+
+              onChange(result);
+            }}
+          />
+        </Grid>
+        <Grid item xs>
+          <Button
+            className={classes.smallButton}
+            fullWidth
+            variant="contained"
+            color="secondary"
+            type="button"
+            onClick={() => {
+              updateValue(1);
+            }}
+          >
+            <AddIcon />
+          </Button>
+        </Grid>
+        <Grid item xs>
+          {largerIncrement && (
+            <Button
+              className={classes.smallButton}
+              fullWidth
+              variant="contained"
+              color="secondary"
+              type="button"
+              onClick={() => updateValue(5)}
+            >
+              +5
+            </Button>
+          )}
+        </Grid>
+      </Grid>
+      <Box minHeight="1.5rem" display="flex" justifyContent="center">
+        <FormHelperText>{helperText}</FormHelperText>
       </Box>
     </FormControl>
   );
@@ -165,6 +173,8 @@ const NumberPicker: FunctionComponent<NumberPickerProps> = ({
 NumberPicker.defaultProps = {
   largerIncrement: false,
   label: undefined,
+  defaultHelperText: '',
+  margin: 'dense',
 };
 
 export default NumberPicker;

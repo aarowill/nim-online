@@ -39,6 +39,7 @@ class JoinGameWithSocket extends PureComponent<JoinGameWithSocketProps, JoinGame
     };
 
     this.handleGameStarted = this.handleGameStarted.bind(this);
+    this.handlePlayerLeft = this.handlePlayerLeft.bind(this);
     this.tryJoin = this.tryJoin.bind(this);
     this.updateJoinCode = this.updateJoinCode.bind(this);
   }
@@ -51,6 +52,7 @@ class JoinGameWithSocket extends PureComponent<JoinGameWithSocketProps, JoinGame
     }
 
     socket.on('gameStarted', this.handleGameStarted);
+    socket.on('playerLeft', this.handlePlayerLeft);
   }
 
   componentWillUnmount() {
@@ -62,6 +64,7 @@ class JoinGameWithSocket extends PureComponent<JoinGameWithSocketProps, JoinGame
     }
 
     socket.off('gameStarted', this.handleGameStarted);
+    socket.off('playerLeft', this.handlePlayerLeft);
 
     if (!startingGame && gameJoined) {
       socket.emit('playerLeft');
@@ -80,6 +83,23 @@ class JoinGameWithSocket extends PureComponent<JoinGameWithSocketProps, JoinGame
     this.setState(() => ({ startingGame: true }));
 
     history.push(`/game?code=${joinCode}`, redirectState);
+  }
+
+  handlePlayerLeft() {
+    const { socket } = this.props;
+
+    this.setState(() => ({
+      joinCode: '',
+      gameJoined: false,
+      isValid: false,
+      helperText: 'Player 1 left, please join another game',
+    }));
+
+    if (socket == null) {
+      return;
+    }
+
+    socket.emit('playerLeft');
   }
 
   tryJoin() {
@@ -119,16 +139,15 @@ class JoinGameWithSocket extends PureComponent<JoinGameWithSocketProps, JoinGame
 
     return (
       <LogoContainerView>
-        {gameJoined && (
+        {gameJoined ? (
           <>
             <Box marginY={2}>
               <Typography variant="h5">Waiting for player 1 to start the game...</Typography>
             </Box>
-            <ClimbingBoxLoader color={theme?.palette.primary.main} />
+            <ClimbingBoxLoader color={theme.palette.primary.main} />
           </>
-        )}
-        {!gameJoined && (
-          <Box marginTop={2}>
+        ) : (
+          <Box marginTop={2} width="16rem">
             <form
               onSubmit={(event) => {
                 event.preventDefault();
@@ -148,11 +167,10 @@ class JoinGameWithSocket extends PureComponent<JoinGameWithSocketProps, JoinGame
                   onChange={(event) => this.updateJoinCode(event.target.value.toUpperCase().trim())}
                   helperText={helperText}
                 />
-                <Box marginTop={2}>
+                <Box marginTop={2} alignSelf="center">
                   <Button
                     disabled={!isValid || joinCode === ''}
                     type="submit"
-                    fullWidth
                     variant="contained"
                     color="primary"
                     size="large"

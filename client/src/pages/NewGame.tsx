@@ -29,6 +29,7 @@ class NewGameWithSocket extends PureComponent<NewGameWithSocketProps, NewGameWit
     };
 
     this.handlePlayer2Ready = this.handlePlayer2Ready.bind(this);
+    this.handlePlayerLeft = this.handlePlayerLeft.bind(this);
     this.startGame = this.startGame.bind(this);
   }
 
@@ -40,6 +41,7 @@ class NewGameWithSocket extends PureComponent<NewGameWithSocketProps, NewGameWit
     }
 
     socket.on('playerJoined', this.handlePlayer2Ready);
+    socket.on('playerLeft', this.handlePlayerLeft);
 
     socket.emit('newGame', ({ joinCode }: NewGameResponse) => {
       this.setState(() => ({ joinCode }));
@@ -88,8 +90,13 @@ class NewGameWithSocket extends PureComponent<NewGameWithSocketProps, NewGameWit
     this.setState(() => ({ player2Ready: true }));
   }
 
+  handlePlayerLeft() {
+    this.setState(() => ({ player2Ready: false }));
+  }
+
   render() {
     const { player2Ready, joinCode } = this.state;
+
     return (
       <LogoContainerView>
         <JoinCodeDisplay player2Ready={player2Ready} joinCode={joinCode} />

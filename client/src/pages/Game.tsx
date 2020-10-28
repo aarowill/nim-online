@@ -9,6 +9,7 @@ import { DoTurnResponse, ErrorResponse } from '../interfaces/eventResponse';
 import { GameRedirectState } from '../interfaces/gameRedirectState';
 import { NimGame } from '../interfaces/nim';
 import SocketContext from '../SocketContext';
+import emptyFunction from '../utilities/emptyFunction';
 
 const useStyles = makeStyles({
   root: {
@@ -30,12 +31,20 @@ function Game({ socket }: GameWithSocketProps): ReactElement {
 
   useEffect(() => {
     if (socket == null) {
-      return;
+      return emptyFunction;
     }
 
-    socket.on('gameUpdate', ({ game: gameUpdate }: { game: NimGame }) => {
+    const handleGameUpdate = ({ game: gameUpdate }: { game: NimGame }) => {
       setGameState(gameUpdate);
-    });
+    };
+
+    socket.on('gameUpdate', handleGameUpdate);
+
+    return () => {
+      socket.off('gameUpdate', handleGameUpdate);
+
+      socket.emit('playerLeft');
+    };
   }, [socket]);
 
   function submitTurn(sticksTaken: number) {

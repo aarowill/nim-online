@@ -13,6 +13,7 @@ const joinGame = (socket: SocketIO.Socket) => (
 
   if (joinResult != null) {
     responseCallback({ success: false, errorMessage: joinResult.message });
+    return;
   }
 
   socket.join(joinCode);

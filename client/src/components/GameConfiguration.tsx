@@ -57,11 +57,11 @@ function GameConfiguration({ player2Ready, onStartGame }: GameConfigurationProps
         }}
         autoComplete="off"
       >
-        <Box display="flex" flexDirection="column">
+        <Box display="flex" flexDirection="column" marginY={1}>
           <Typography variant="h6" gutterBottom>
             Game Configuration
           </Typography>
-          <FormControl>
+          <FormControl margin="dense">
             <FormLabel>First to move</FormLabel>
             <RadioGroup
               aria-label="First to move"
@@ -83,6 +83,7 @@ function GameConfiguration({ player2Ready, onStartGame }: GameConfigurationProps
             min={MIN_NUMBER_OF_STICKS}
             max={MAX_NUMBER_OF_STICKS}
             valid={numberOfSticksValid}
+            defaultHelperText={`Minimum is ${MIN_NUMBER_OF_STICKS}, maximum is ${MAX_NUMBER_OF_STICKS}`}
             onChange={(newValue) => setNumberOfSticks(newValue)}
             setIsValid={(isValid) => setNumberOfSticksValid(isValid)}
           />
@@ -93,10 +94,11 @@ function GameConfiguration({ player2Ready, onStartGame }: GameConfigurationProps
             min={MIN_PICKUP_PER_TURN}
             max={MAX_PICKUP_PER_TURN}
             valid={perTurnPickupValid}
+            defaultHelperText={`Minimum is ${MIN_PICKUP_PER_TURN}, maximum is ${MAX_PICKUP_PER_TURN}`}
             onChange={(newValue) => setPerTurnPickup(newValue)}
             setIsValid={(isValid) => setPerTurnPickupValid(isValid)}
           />
-          <FormControl>
+          <FormControl margin="dense">
             <FormLabel>If you pick up the last stick you</FormLabel>
             <RadioGroup
               aria-label="If you pick up the lasts tick you"
@@ -122,7 +124,7 @@ function GameConfiguration({ player2Ready, onStartGame }: GameConfigurationProps
               </Box>
             </RadioGroup>
           </FormControl>
-          <Box display="flex" justifyContent="center" marginTop={0.5}>
+          <Box display="flex" alignItems="center" flexDirection="column">
             <Button disabled={!formIsValid} variant="contained" color="primary" type="submit">
               Start
             </Button>
