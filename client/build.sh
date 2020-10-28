@@ -10,3 +10,4 @@ docker container rm -f extract
 echo Building aarowill/nim-caddy:latest
 
 docker build -t aarowill/nim-caddy:latest .
+rm -r build
