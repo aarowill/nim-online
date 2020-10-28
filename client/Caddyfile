@@ -10,6 +10,15 @@
 nim-online.aarowill.ca {
     root * /srv
     reverse_proxy /api/* nim-api:8081
+
     file_server
     encode zstd gzip
+
+    @sparequests {
+        not path /api/*
+        not file {
+            try_files {path} {path}/
+        }
+    }
+    rewrite @sparequests /
 }

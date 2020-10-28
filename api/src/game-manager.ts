@@ -129,10 +129,6 @@ export const doGameTurn = (code: string, playerId: string, sticksToPickUp: numbe
     return new Error('A game with that code does not exist');
   }
 
-  if (room.player1Id == null || room.player2Id == null) {
-    return new Error('The room is missing players');
-  }
-
   if (room.game == null) {
     return new Error('The room with that code has not started its game yet');
   }
