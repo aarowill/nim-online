@@ -1,11 +1,16 @@
 import { NimGame } from './nim';
 
-export interface SuccessResponse {
+interface SuccessResponse {
   success: true;
 }
 
 export interface NewGameResponse extends SuccessResponse {
   joinCode: string;
+}
+
+export interface JoinGameResponse extends SuccessResponse {
+  game?: NimGame;
+  playerNumber: 0 | 1;
 }
 
 export interface StartGameResponse extends SuccessResponse {

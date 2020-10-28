@@ -5,8 +5,7 @@ import GameBoard from '../components/GameBoard';
 import GameControls from '../components/GameControls';
 import GameResult from '../components/GameResult';
 import Logo from '../components/Logo';
-import { DoTurnResponse, ErrorResponse } from '../interfaces/eventResponse';
-import { GameRedirectState } from '../interfaces/gameRedirectState';
+import { DoTurnResponse, ErrorResponse, JoinGameResponse } from '../interfaces/eventResponse';
 import { NimGame } from '../interfaces/nim';
 import SocketContext from '../SocketContext';
 import emptyFunction from '../utilities/emptyFunction';
@@ -22,12 +21,39 @@ interface GameWithSocketProps {
 }
 
 function Game({ socket }: GameWithSocketProps): ReactElement {
-  const history = useHistory<GameRedirectState>();
+  const history = useHistory();
+  const { search } = history.location;
   const classes = useStyles();
 
-  const { game: initialGame, player } = history.location.state;
+  const joinCode = new URLSearchParams(search).get('code');
 
-  const [gameState, setGameState] = useState(initialGame);
+  const [gameState, setGameState] = useState<NimGame | undefined>(undefined);
+  const [player, setPlayer] = useState<0 | 1 | undefined>(undefined);
+
+  useEffect(() => {
+    if (socket == null) {
+      return;
+    }
+
+    if (gameState === undefined) {
+      socket.emit('joinGame', { joinCode }, (response: JoinGameResponse | ErrorResponse) => {
+        if (!response.success) {
+          // TODO use error here
+          history.push('/');
+          return;
+        }
+
+        if (response.game === undefined) {
+          // TODO signal some kind of error here
+          history.push('/');
+          return;
+        }
+
+        setGameState(response.game);
+        setPlayer(response.playerNumber);
+      });
+    }
+  });
 
   useEffect(() => {
     if (socket == null) {
@@ -67,17 +93,23 @@ function Game({ socket }: GameWithSocketProps): ReactElement {
       <Box className={classes.root} display="flex" flexDirection="column">
         <Box display="flex" flexDirection="column" marginY="auto" alignItems="center">
           <Logo size="small" />
-          <GameBoard sticks={gameState.remainingSticks} />
-          {gameState.winner === undefined && (
-            <GameControls
-              sticks={gameState.remainingSticks}
-              maxPerTurn={gameState.maxPickupPerTurn}
-              currentPlayer={player}
-              currentTurn={gameState.currentPlayerTurn}
-              submitTurn={submitTurn}
-            />
+          {gameState !== undefined && player !== undefined && (
+            <>
+              <GameBoard sticks={gameState.remainingSticks} />
+              {gameState && gameState.winner === undefined && (
+                <GameControls
+                  sticks={gameState.remainingSticks}
+                  maxPerTurn={gameState.maxPickupPerTurn}
+                  currentPlayer={player}
+                  currentTurn={gameState.currentPlayerTurn}
+                  submitTurn={submitTurn}
+                />
+              )}
+            </>
           )}
-          {gameState.winner !== undefined && <GameResult currentPlayer={player} winner={gameState.winner} />}
+          {player !== undefined && gameState?.winner !== undefined && (
+            <GameResult currentPlayer={player} winner={gameState.winner} />
+          )}
         </Box>
       </Box>
     </Container>

@@ -4,7 +4,7 @@ import React, { PureComponent, ReactElement } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { ClimbingBoxLoader } from 'react-spinners';
 import LogoContainerView from '../components/LogoContainerView';
-import { ErrorResponse, SuccessResponse } from '../interfaces/eventResponse';
+import { ErrorResponse, JoinGameResponse } from '../interfaces/eventResponse';
 import { GameRedirectState } from '../interfaces/gameRedirectState';
 import { NimGame } from '../interfaces/nim';
 import SocketContext from '../SocketContext';
@@ -24,6 +24,7 @@ interface JoinGameWithSocketState {
   helperText: string;
   gameJoined: boolean;
   startingGame: boolean;
+  player: 0 | 1;
 }
 
 class JoinGameWithSocket extends PureComponent<JoinGameWithSocketProps, JoinGameWithSocketState> {
@@ -36,6 +37,7 @@ class JoinGameWithSocket extends PureComponent<JoinGameWithSocketProps, JoinGame
       helperText: defaultHelperText,
       gameJoined: false,
       startingGame: false,
+      player: 1,
     };
 
     this.handleGameStarted = this.handleGameStarted.bind(this);
@@ -72,12 +74,12 @@ class JoinGameWithSocket extends PureComponent<JoinGameWithSocketProps, JoinGame
   }
 
   handleGameStarted(game: NimGame) {
-    const { joinCode } = this.state;
+    const { joinCode, player } = this.state;
     const { history } = this.props;
 
     const redirectState: GameRedirectState = {
       game,
-      player: 1,
+      player,
     };
 
     this.setState(() => ({ startingGame: true }));
@@ -110,7 +112,7 @@ class JoinGameWithSocket extends PureComponent<JoinGameWithSocketProps, JoinGame
       return;
     }
 
-    socket.emit('joinGame', { joinCode }, (response: SuccessResponse | ErrorResponse) => {
+    socket.emit('joinGame', { joinCode }, (response: JoinGameResponse | ErrorResponse) => {
       if (!response.success) {
         this.setState(() => ({
           isValid: false,
@@ -119,7 +121,7 @@ class JoinGameWithSocket extends PureComponent<JoinGameWithSocketProps, JoinGame
         return;
       }
 
-      this.setState(() => ({ gameJoined: true }));
+      this.setState(() => ({ gameJoined: true, player: response.playerNumber }));
     });
   }
 

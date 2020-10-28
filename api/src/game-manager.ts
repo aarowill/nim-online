@@ -52,23 +52,44 @@ export const createNewGame = (playerId: string): string => {
  *
  * @param code The game code
  * @param playerId The ID of the player joining the game
- * @returns null or an Error if the join failed
+ * @returns the playerId and current game state (if defined) or an Error if the join failed
  */
-export const tryJoinGame = (code: string, playerId: string): Error | null => {
+export const tryJoinGame = (code: string, playerId: string): Error | [0 | 1, NimGame | undefined] => {
   const room = gameRooms.get(code);
 
   if (room == null) {
     return new Error('A game with that code does not exist');
   }
 
+  // If the player is already in the game, send them the latest game state
+  if (playerId === room.player1Id) {
+    return [0, room.game];
+  }
+
+  if (playerId === room.player2Id) {
+    return [1, room.game];
+  }
+
   if (room.currentMembers === 2) {
     return new Error('Game is already full');
   }
 
-  room.player2Id = playerId;
-  room.currentMembers = 2;
+  let playerNumber: 0 | 1;
 
-  return null;
+  if (room.player1Id === undefined) {
+    room.player1Id = playerId;
+    playerNumber = 0;
+  } else if (room.player2Id === undefined) {
+    room.player2Id = playerId;
+    playerNumber = 1;
+  } else {
+    logger.warn('Unexpected error: room was not full but had no undefined ids');
+    return new Error('Game is already full');
+  }
+
+  room.currentMembers += 1;
+
+  return [playerNumber, room.game];
 };
 
 /**

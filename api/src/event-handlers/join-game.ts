@@ -1,5 +1,5 @@
 import { tryJoinGame } from '@src/game-manager';
-import { ErrorResponse, SuccessResponse } from './event-response';
+import { ErrorResponse, JoinGameResponse } from './event-response';
 
 interface JoinGameRequest {
   joinCode: string;
@@ -7,18 +7,20 @@ interface JoinGameRequest {
 
 const joinGame = (socket: SocketIO.Socket) => (
   { joinCode }: JoinGameRequest,
-  responseCallback: (result: SuccessResponse | ErrorResponse) => void
+  responseCallback: (result: JoinGameResponse | ErrorResponse) => void
 ): void => {
   const joinResult = tryJoinGame(joinCode, socket.id);
 
-  if (joinResult != null) {
+  if (joinResult instanceof Error) {
     responseCallback({ success: false, errorMessage: joinResult.message });
     return;
   }
 
   socket.join(joinCode);
 
-  responseCallback({ success: true });
+  const [playerNumber, game] = joinResult;
+
+  responseCallback({ success: true, playerNumber, game });
 
   socket.to(joinCode).emit('playerJoined');
 };

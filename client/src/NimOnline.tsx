@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { CssBaseline } from '@material-ui/core';
+import { createMuiTheme, CssBaseline, ThemeProvider } from '@material-ui/core';
 import io from 'socket.io-client';
 import NewGame from './pages/NewGame';
 import JoinGame from './pages/JoinGame';
@@ -17,9 +17,20 @@ const socket = io(serverUrl, {
   timeout: 10000,
 });
 
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#5e35b1',
+    },
+    secondary: {
+      main: '#00bcd4',
+    },
+  },
+});
+
 const App = (): ReactElement => {
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <CssBaseline />
       <SocketContext.Provider value={socket}>
         <Router>
@@ -42,7 +53,7 @@ const App = (): ReactElement => {
           </Switch>
         </Router>
       </SocketContext.Provider>
-    </>
+    </ThemeProvider>
   );
 };
 
