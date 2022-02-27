@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -eux
+
+find_site() {
+  goatcounter db show site\
+    -db "$GOATCOUNTER_DB" \
+    -createdb \
+    -find "$GOATCOUNTER_DOMAIN"
+}
+
+create_site() {
+  goatcounter db create site \
+    -db "$GOATCOUNTER_DB" \
+    -createdb \
+    -vhost "$GOATCOUNTER_DOMAIN" \
+    -user.email "$GOATCOUNTER_EMAIL" \
+    -user.password "$GOATCOUNTER_PASSWORD"
+}
+
+# Create the site if it does not already exist
+find_site || create_site
+
+exec "$@"

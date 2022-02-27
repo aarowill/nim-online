@@ -8,7 +8,7 @@ import LogoContainerView from '../components/LogoContainerView';
 import { ErrorResponse, JoinGameResponse } from '../interfaces/eventResponse';
 import { GameRedirectState } from '../interfaces/gameRedirectState';
 import { NimGame } from '../interfaces/nim';
-import SocketContext from '../SocketContext';
+import SocketContext from '../contexts/SocketContext';
 
 const defaultHelperText = 'Enter code to join game';
 const validCodeRegex = /^[ABCDEFGHJKLMNPQRSTUVWXYZ]*$/;

@@ -1,14 +1,10 @@
 import React, { ReactElement } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { CssBaseline, ThemeProvider } from '@material-ui/core';
 import { createTheme } from '@material-ui/core/styles';
 import { Manager } from 'socket.io-client';
-import NewGame from './pages/NewGame';
-import JoinGame from './pages/JoinGame';
-import Landing from './pages/Landing';
-import SocketContext from './SocketContext';
-import NotFound from './pages/NotFound';
-import Game from './pages/Game';
+import Routes from './Routes';
+import SocketContext from './contexts/SocketContext';
 
 const serverUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://nim-online.aarowill.ca';
 
@@ -36,23 +32,7 @@ const App = (): ReactElement => {
       <CssBaseline />
       <SocketContext.Provider value={socket}>
         <Router>
-          <Switch>
-            <Route exact path="/new-game">
-              <NewGame />
-            </Route>
-            <Route exact path="/join-game">
-              <JoinGame />
-            </Route>
-            <Route exact path="/game">
-              <Game />
-            </Route>
-            <Route exact path="/">
-              <Landing />
-            </Route>
-            <Route>
-              <NotFound />
-            </Route>
-          </Switch>
+          <Routes />
         </Router>
       </SocketContext.Provider>
     </ThemeProvider>

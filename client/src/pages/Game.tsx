@@ -8,7 +8,7 @@ import GameResult from '../components/GameResult';
 import Logo from '../components/Logo';
 import { DoTurnResponse, ErrorResponse, JoinGameResponse } from '../interfaces/eventResponse';
 import { NimGame } from '../interfaces/nim';
-import SocketContext from '../SocketContext';
+import SocketContext from '../contexts/SocketContext';
 import emptyFunction from '../utilities/emptyFunction';
 
 const useStyles = makeStyles({

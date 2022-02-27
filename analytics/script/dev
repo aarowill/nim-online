@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+mkdir -p db
+docker run --rm --interactive --tty -p 127.0.0.1:3002:3002/tcp --env-file ./development.env --volume $PWD/db:/goatcounter/db aarowill/nim-analytics:latest

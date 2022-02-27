@@ -7,7 +7,7 @@ import { GameRedirectState } from '../interfaces/gameRedirectState';
 import LogoContainerView from '../components/LogoContainerView';
 import GameConfiguration from '../components/GameConfiguration';
 import JoinCodeDisplay from '../components/JoinCodeDisplay';
-import SocketContext from '../SocketContext';
+import SocketContext from '../contexts/SocketContext';
 
 interface NewGameWithSocketProps extends RouteComponentProps {
   socket: Socket | undefined;

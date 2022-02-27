@@ -22,3 +22,7 @@ nim-online.aarowill.ca {
     }
     rewrite @sparequests /
 }
+
+nim-analytics.aarowill.ca {
+    reverse_proxy nim-analytics:8080
+}
