@@ -2,7 +2,7 @@
 set -e
 
 cd client
-./build.sh
+docker build -t aarowill/nim-caddy:latest
 
 cd ../api
-docker build -t aarowill/nim-api .
+docker build -t aarowill/nim-api:latest .

@@ -1,4 +1,5 @@
-FROM node:16-alpine
+# syntax=docker/dockerfile:1
+FROM node:16-slim
 
 RUN mkdir /home/node/app && chown -R node:node /home/node/app
 
