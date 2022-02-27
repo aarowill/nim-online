@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/usr/bin/env bash
+set -e
+
 echo Building aarowill/nim-caddy:build
 
 docker build -t aarowill/nim-caddy:build . -f Dockerfile.build

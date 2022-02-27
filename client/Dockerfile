@@ -1,4 +1,4 @@
-FROM caddy:2.1.1-alpine
+FROM caddy:2.4.6-alpine
 
 RUN apk --no-cache add curl
 
