@@ -58,6 +58,7 @@ class NewGameWithSocket extends PureComponent<NewGameWithSocketProps, NewGameWit
     }
 
     socket.off('playerJoined', this.handlePlayer2Ready);
+    socket.off('playerLeft', this.handlePlayerLeft);
 
     if (!startingGame) {
       socket.emit('playerLeft');
