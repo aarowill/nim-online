@@ -1,19 +1,16 @@
-import logger from '@shared/logger';
 import { playerLeftRoom } from '@src/game-manager';
+import { Socket } from 'socket.io';
 import gameRoomLookup from './game-room-lookup';
 
-const playerLeft = (socket: SocketIO.Socket) => (): void => {
+const playerLeft = (socket: Socket) => (): void => {
   const code = gameRoomLookup(socket);
 
   if (code == null || typeof code !== 'string') {
     return;
   }
 
-  socket.leave(code, (err?: Error) => {
-    if (err) {
-      logger.warn(`Error leaving room: ${err.message}`);
-    }
-  });
+  // The in-memory adapter returns void here, not a promise
+  void socket.leave(code);
 
   const result = playerLeftRoom(code, socket.id);
 

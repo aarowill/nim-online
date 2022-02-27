@@ -1,6 +1,7 @@
 import { Box, Container, makeStyles } from '@material-ui/core';
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import type { Socket } from 'socket.io-client';
 import GameBoard from '../components/GameBoard';
 import GameControls from '../components/GameControls';
 import GameResult from '../components/GameResult';
@@ -17,7 +18,7 @@ const useStyles = makeStyles({
 });
 
 interface GameWithSocketProps {
-  socket: SocketIOClient.Socket | undefined;
+  socket: Socket | undefined;
 }
 
 function Game({ socket }: GameWithSocketProps): ReactElement {
@@ -73,20 +74,23 @@ function Game({ socket }: GameWithSocketProps): ReactElement {
     };
   }, [socket]);
 
-  function submitTurn(sticksTaken: number) {
-    if (socket == null) {
-      return;
-    }
-
-    socket.emit('doTurn', { sticksTaken }, (result: DoTurnResponse | ErrorResponse) => {
-      if (result.success === false) {
-        // TODO: do something with this error
+  const submitTurn = useCallback(
+    (sticksTaken: number) => {
+      if (socket == null) {
         return;
       }
 
-      setGameState(result.game);
-    });
-  }
+      socket.emit('doTurn', { sticksTaken }, (result: DoTurnResponse | ErrorResponse) => {
+        if (result.success === false) {
+          // TODO: do something with this error
+          return;
+        }
+
+        setGameState(result.game);
+      });
+    },
+    [socket]
+  );
 
   return (
     <Container maxWidth="sm">

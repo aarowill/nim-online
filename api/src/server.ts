@@ -3,7 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import express from 'express';
 import { createServer } from 'http';
-import socketio from 'socket.io';
+import { Server } from 'socket.io';
 import eventHandlers from '@src/event-handlers';
 
 const app = express();
@@ -12,7 +12,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const corsOptions: cors.CorsOptions = {
-  origin: process.env.ALLOW_ORIGIN || '*',
+  origin: process.env.ALLOW_ORIGIN,
   methods: ['GET', 'OPTIONS'],
   credentials: true,
 };
@@ -26,7 +26,7 @@ app.get('/api/health', (_req, res) => res.send('OK'));
 // Socket.io
 const server = createServer(app);
 
-const io = socketio(server, { path: '/api/socket' });
+const io = new Server(server, { path: '/api/socket', cors: corsOptions });
 
 io.sockets.on('connect', (socket) => {
   Object.entries(eventHandlers).forEach(([event, handler]) => {

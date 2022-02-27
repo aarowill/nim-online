@@ -1,5 +1,6 @@
 import React, { PureComponent, ReactElement } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
+import type { Socket } from 'socket.io-client';
 import { ErrorResponse, NewGameResponse, StartGameResponse } from '../interfaces/eventResponse';
 import { NimOptions } from '../interfaces/nim';
 import { GameRedirectState } from '../interfaces/gameRedirectState';
@@ -9,7 +10,7 @@ import JoinCodeDisplay from '../components/JoinCodeDisplay';
 import SocketContext from '../SocketContext';
 
 interface NewGameWithSocketProps extends RouteComponentProps {
-  socket: SocketIOClient.Socket | undefined;
+  socket: Socket | undefined;
 }
 
 interface NewGameWithSocketState {
@@ -63,6 +64,14 @@ class NewGameWithSocket extends PureComponent<NewGameWithSocketProps, NewGameWit
     }
   }
 
+  handlePlayer2Ready() {
+    this.setState(() => ({ player2Ready: true }));
+  }
+
+  handlePlayerLeft() {
+    this.setState(() => ({ player2Ready: false }));
+  }
+
   startGame(config: NimOptions) {
     const { socket, history } = this.props;
     if (socket == null) {
@@ -84,14 +93,6 @@ class NewGameWithSocket extends PureComponent<NewGameWithSocketProps, NewGameWit
 
       history.push(`/game?code=${response.gameCode}`, redirectState);
     });
-  }
-
-  handlePlayer2Ready() {
-    this.setState(() => ({ player2Ready: true }));
-  }
-
-  handlePlayerLeft() {
-    this.setState(() => ({ player2Ready: false }));
   }
 
   render() {

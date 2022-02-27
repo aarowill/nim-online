@@ -3,6 +3,7 @@ import withTheme, { WithTheme } from '@material-ui/core/styles/withTheme';
 import React, { PureComponent, ReactElement } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { ClimbingBoxLoader } from 'react-spinners';
+import type { Socket } from 'socket.io-client';
 import LogoContainerView from '../components/LogoContainerView';
 import { ErrorResponse, JoinGameResponse } from '../interfaces/eventResponse';
 import { GameRedirectState } from '../interfaces/gameRedirectState';
@@ -15,7 +16,7 @@ const validCodeRegex = /^[ABCDEFGHJKLMNPQRSTUVWXYZ]*$/;
 interface JoinGameProps extends RouteComponentProps, WithTheme {}
 
 interface JoinGameWithSocketProps extends JoinGameProps {
-  socket: SocketIOClient.Socket | undefined;
+  socket: Socket | undefined;
 }
 
 interface JoinGameWithSocketState {

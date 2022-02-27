@@ -1,9 +1,4 @@
-/**
- * Setup the jet-logger.
- *
- * Documentation: https://github.com/seanpmaxwell/jet-logger
- */
-import Logger from 'jet-logger';
+import { Logger } from 'tslog';
 
 const logger = new Logger();
 

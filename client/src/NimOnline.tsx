@@ -1,7 +1,8 @@
 import React, { ReactElement } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { createMuiTheme, CssBaseline, ThemeProvider } from '@material-ui/core';
-import io from 'socket.io-client';
+import { CssBaseline, ThemeProvider } from '@material-ui/core';
+import { createTheme } from '@material-ui/core/styles';
+import { Manager } from 'socket.io-client';
 import NewGame from './pages/NewGame';
 import JoinGame from './pages/JoinGame';
 import Landing from './pages/Landing';
@@ -11,13 +12,14 @@ import Game from './pages/Game';
 
 const serverUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://nim-online.aarowill.ca';
 
-const socket = io(serverUrl, {
+const manager = new Manager(serverUrl, {
   path: '/api/socket',
   reconnectionAttempts: 5,
   timeout: 10000,
 });
+const socket = manager.socket('/');
 
-const theme = createMuiTheme({
+const theme = createTheme({
   palette: {
     primary: {
       main: '#5e35b1',
