@@ -1,6 +1,32 @@
 #!/usr/bin/env bash
 
-set -eux
+set -e
+
+if [[ -n "$GOATCOUNTER_DEBUG" ]]; then
+  set -x
+fi
+
+fail="no"
+
+required_vars=(GOATCOUNTER_DB GOATCOUNTER_DOMAIN)
+firstrun_vars=(GOATCOUNTER_EMAIL GOATCOUNTER_PASSWORD)
+
+for var in "${required_vars[@]}"; do
+  if [[ -z "${!var}" ]]; then
+    echo "ERROR: Required environment variable \$${var} not set"
+    fail="yes"
+  fi
+done
+
+for var in ${firstrun_vars[@]}; do
+  if [[ -z "${!var}" ]]; then
+    echo "WARNING: First run environment variable \$${var} not set, this may fail"
+  fi
+done
+
+if [[ "$fail" = "yes" ]]; then
+  exit 1
+fi
 
 find_site() {
   goatcounter db show site\

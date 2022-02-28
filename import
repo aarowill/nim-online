@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -e
+
+docker load -i ./nim-caddy.tar
+docker load -i ./nim-api.tar
+docker load -i ./nim-analytics.tar
