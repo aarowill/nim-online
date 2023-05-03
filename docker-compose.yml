@@ -33,6 +33,7 @@ services:
     container_name: "nim-caddy"
     networks:
       - web
+    restart: always
     ports:
       - "80:80"
       - "443:443"
