@@ -9,12 +9,12 @@ let
 
   pkgs = import pkgsSrc { inherit system; };
 
-  base = import "${pkgsSrc}/nixos" { configuration = ./systemImage.nix; };
+  qemu = import "${pkgsSrc}/nixos" { configuration = ./qemuImage.nix; };
   client = pkgs.callPackage ./client { };
   api = pkgs.callPackage ./api { };
 in
 {
-  image = base.config.system.build.qcow;
+  qemu = qemu.config.system.build.qcow;
   client = client;
   api = api;
 }
