@@ -18,6 +18,11 @@
     fsType = "ext4";
   };
 
+  environment.systemPackages = [
+    pkgs.nimClient
+    pkgs.nimApi
+  ];
+
   boot.growPartition = true;
   boot.kernelParams = [ "console=ttyS0" ];
   boot.loader.grub.device =

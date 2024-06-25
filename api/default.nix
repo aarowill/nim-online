@@ -13,6 +13,6 @@ buildNpmPackage {
 
   installPhase = ''
     mkdir -p $out/api
-    cp -r dist env node_modules package*.json $out/api/
+    cp -r dist env node_modules package*.json $out/api
   '';
 }

@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 {
   # List all users here declaratively
   users = {
@@ -10,7 +10,6 @@
       aaron = {
         description = "Aaron Williamson";
         isNormalUser = true;
-        # shell = pkgs.fish;
         extraGroups = [ "wheel" ];
         openssh.authorizedKeys.keys = [
           # MBP
@@ -32,4 +31,51 @@
 
   # Passwordless sudo
   security.sudo.wheelNeedsPassword = false;
+
+  # Enable the API service
+  services.nimOnline.enable = true;
+
+  # Configure reverse proxy for hosting api + frontend and tls termination
+  services.caddy = {
+    enable = true;
+    configFile = pkgs.writeText "nimCaddyConfig" ''
+      {
+          email certificates@aarowill.ca
+      }
+
+      # Health check endpoint
+      # :8080 {
+      #     respond /health 200
+      # }
+
+      nim-online.aarowill.ca {
+          root * ${pkgs.nimClient}/public
+          reverse_proxy /api/* localhost:8081
+
+          file_server
+          encode zstd gzip
+
+          @sparequests {
+              not path /api/*
+              not file {
+                  try_files {path} {path}/
+              }
+          }
+          rewrite @sparequests /
+      }
+
+      #  nim-analytics.aarowill.ca {
+      #      reverse_proxy nim-analytics:8080
+      #  }
+    '';
+  };
+
+  # Firewall config
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [
+      80
+      443
+    ];
+  };
 }

@@ -17,7 +17,7 @@ buildNpmPackage {
   # };
 
   installPhase = ''
-    mkdir -p $out/ui
-    cp -r build/* $out/ui/
+    mkdir -p $out/public
+    cp -r build/* $out/public
   '';
 }

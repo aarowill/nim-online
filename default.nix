@@ -7,11 +7,35 @@ let
 
   system = "x86_64-linux";
 
+  # Build packages using nixpkgs
   pkgs = import pkgsSrc { inherit system; };
 
-  qemu = import "${pkgsSrc}/nixos" { configuration = ./qemuImage.nix; };
   client = pkgs.callPackage ./client { };
   api = pkgs.callPackage ./api { };
+
+  # Get a new nixpkgs with my custom packages overlaid for passing into the image build
+  customPkgs = import pkgsSrc {
+    inherit system;
+    overlays = [
+      (final: prev: {
+        nimClient = client;
+        nimApi = api;
+      })
+    ];
+  };
+
+  eval =
+    config:
+    import "${pkgsSrc}/nixos/lib/eval-config.nix" {
+      inherit system;
+      modules = [
+        ./nimOnline.nix
+        config
+      ];
+      pkgs = customPkgs;
+    };
+
+  qemu = eval ./qemuImage.nix;
 in
 {
   qemu = qemu.config.system.build.qcow;
