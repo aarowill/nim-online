@@ -13,10 +13,13 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    systemd.services.nimOnline = {
+    systemd.services."nim-api" = {
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
-      path = [ pkgs.nodejs pkgs.bash ];
+      path = [
+        pkgs.nodejs
+        pkgs.bash
+      ];
 
       serviceConfig = {
         Type = "simple";
