@@ -6,7 +6,7 @@ import { Manager } from 'socket.io-client';
 import Routes from './Routes';
 import SocketContext from './contexts/SocketContext';
 
-const serverUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://nim-online.aarowill.ca';
+const serverUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : 'https://nim-online2.aarowill.ca';
 
 const manager = new Manager(serverUrl, {
   path: '/api/socket',

@@ -48,7 +48,7 @@
       #     respond /health 200
       # }
 
-      nim-online.aarowill.ca {
+      nim-online2.aarowill.ca {
           root * ${pkgs.nimClient}/public
           reverse_proxy /api/* localhost:8081
 
