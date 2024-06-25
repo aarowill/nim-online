@@ -16,7 +16,7 @@ in
     systemd.services.nimOnline = {
       after = [ "network.target" ];
       wantedBy = [ "multi-user.target" ];
-      path = [ pkgs.bash ];
+      path = [ pkgs.nodejs pkgs.bash ];
 
       serviceConfig = {
         Type = "simple";

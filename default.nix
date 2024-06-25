@@ -36,9 +36,11 @@ let
     };
 
   qemu = eval ./qemuImage.nix;
+  baseSystem = eval ./systemConfig.nix;
 in
 {
   qemu = qemu.config.system.build.qcow;
+  nixos = baseSystem.config.system.build.toplevel;
   client = client;
   api = api;
 }
