@@ -25,7 +25,7 @@ in
         StateDirectory = "goatcounter";
         ExecStart = ''
           ${pkgs.goatcounter}/bin/goatcounter serve \
-            -db "sqlite+$STATE_DIRECTORY/goatcounter.sqlite3"
+            -db "sqlite+/var/lib/goatcounter/goatcounter.sqlite3" \
             -automigrate \
             -listen localhost:8080 \
             -tls proxy
