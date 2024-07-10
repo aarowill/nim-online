@@ -20,7 +20,9 @@
     };
   };
 
-  nix.trustedUsers = [
+  system.stateVersion = "24.05";
+
+  nix.settings.trusted-users = [
     "root"
     "aaron"
   ];
