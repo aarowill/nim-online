@@ -28,6 +28,7 @@
   # Enable the OpenSSH daemon.
   services.openssh = {
     enable = true;
+    ports = [ 55522 ];
     settings = {
       PasswordAuthentication = false;
       PermitRootLogin = "no";
@@ -53,7 +54,7 @@
       #     respond /health 200
       # }
 
-      nim-online2.aarowill.ca {
+      nim-online.aarowill.ca {
           root * ${pkgs.nimClient}/public
           reverse_proxy /api/* localhost:8081
 
@@ -69,9 +70,9 @@
           rewrite @sparequests /
       }
 
-      #  nim-analytics.aarowill.ca {
-      #      reverse_proxy nim-analytics:8080
-      #  }
+      nim-analytics.aarowill.ca {
+          reverse_proxy nim-analytics:8080
+      }
     '';
   };
 
