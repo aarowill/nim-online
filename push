@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -x
+set -e
+
+if [[ -z "$1" ]]; then
+	echo "Error: hostname is required: $0 <hostname>"
+	exit 1
+fi
+
+deriv=$(nix-build -A pushable)
+
+nix-copy-closure --to "$1" "$deriv"
+ssh "$1" sudo nix-env -p /nix/var/nix/profiles/system --set "$deriv"
+ssh "$1" sudo /nix/var/nix/profiles/system/bin/switch-to-configuration switch
+ssh "$1" sudo nix-env -p /nix/var/nix/profiles/system --list-generations
