@@ -2,8 +2,6 @@
 { lib
 , buildGoModule
 , fetchFromGitHub
-, testers
-, goatcounter
 }:
 
 buildGoModule rec {
@@ -31,12 +29,6 @@ buildGoModule rec {
     "-w"
     "-X zgo.at/goatcounter/v2.Version=${src.rev}"
   ];
-
-  passthru.tests.version = testers.testVersion {
-    package = goatcounter;
-    command = "goatcounter version";
-    version = "v${version}";
-  };
 
   meta = {
     description = "Easy web analytics. No tracking of personal data";

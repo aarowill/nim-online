@@ -38,7 +38,10 @@
   # Passwordless sudo
   security.sudo.wheelNeedsPassword = false;
 
-  # Enable the API service
+  # Enable goatcounter analytics (port 8080)
+  services.goatcounter.enable = true;
+
+  # Enable the API service (port 8081)
   services.nimOnline.enable = true;
 
   # Configure reverse proxy for hosting api + frontend and tls termination
@@ -71,7 +74,7 @@
       }
 
       nim-analytics.aarowill.ca {
-          reverse_proxy nim-analytics:8080
+          reverse_proxy localhost:8080
       }
     '';
   };

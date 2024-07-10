@@ -12,6 +12,7 @@ let
 
   client = pkgs.callPackage ./client { };
   api = pkgs.callPackage ./api { };
+  goatcounter = pkgs.callPackage ./analytics { };
 
   # Get a new nixpkgs with my custom packages overlaid for passing into the image build
   customPkgs = import pkgsSrc {
@@ -20,6 +21,7 @@ let
       (final: prev: {
         nimClient = client;
         nimApi = api;
+        goatcounter = goatcounter;
       })
     ];
   };
@@ -29,17 +31,19 @@ let
     import "${pkgsSrc}/nixos/lib/eval-config.nix" {
       inherit system;
       modules = [
-        ./nimOnline.nix
+        ./modules/nimOnline.nix
+        ./modules/goatcounter.nix
         config
       ];
       pkgs = customPkgs;
     };
 
-  qemu = eval ./qemuImage.nix;
+  qemu = eval ./modules/qemuImage.nix;
 in
 {
   qemu = qemu.config.system.build.qcow;
   pushable = qemu.config.system.build.toplevel;
   client = client;
   api = api;
+  goatcounter = goatcounter;
 }
