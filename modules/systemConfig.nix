@@ -40,8 +40,16 @@
   # Passwordless sudo
   security.sudo.wheelNeedsPassword = false;
 
-  # Enable goatcounter analytics (port 8080)
-  services.goatcounter.enable = true;
+  # Enable goatcounter analytics
+  services.goatcounter = {
+    enable = true;
+    proxy = true;
+    port = 8080;
+    extraArgs = [
+      "-db" "sqlite+goatcounter.sqlite3"
+      "-automigrate"
+    ];
+  };
 
   # Enable the API service (port 8081)
   services.nimOnline.enable = true;

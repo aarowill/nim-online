@@ -1,8 +1,8 @@
 let
   pkgsSrc = fetchTarball {
-    name = "nixos-24.05-2024-07-03";
-    url = "https://github.com/NixOS/nixpkgs/archive/d032c1a6dfad4eedec7e35e91986becc699d7d69.tar.gz";
-    sha256 = "14g286p6dh0j1qbkmw2520si2lbbjmbmr119496jkmpk6516n3v7";
+    name = "nixos-24.11-2025-03-23";
+    url = "https://github.com/NixOS/nixpkgs/archive/7105ae3957700a9646cc4b766f5815b23ed0c682.tar.gz";
+    sha256 = "0j3jd82iyyck4hpmz7pkak1v27l7pydl0c3vvyz6wfpi612x8xzi";
   };
 
   system = "x86_64-linux";
@@ -12,7 +12,6 @@ let
 
   client = pkgs.callPackage ./client { };
   api = pkgs.callPackage ./api { };
-  goatcounter = pkgs.callPackage ./analytics { };
 
   # Get a new nixpkgs with my custom packages overlaid for passing into the image build
   customPkgs = import pkgsSrc {
@@ -21,7 +20,6 @@ let
       (final: prev: {
         nimClient = client;
         nimApi = api;
-        goatcounter = goatcounter;
       })
     ];
   };
@@ -32,7 +30,6 @@ let
       inherit system;
       modules = [
         ./modules/nimOnline.nix
-        ./modules/goatcounter.nix
         config
       ];
       pkgs = customPkgs;
@@ -45,5 +42,4 @@ in
   pushable = qemu.config.system.build.toplevel;
   client = client;
   api = api;
-  goatcounter = goatcounter;
 }
