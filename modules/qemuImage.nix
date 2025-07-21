@@ -9,7 +9,6 @@
 {
   imports = [
     "${modulesPath}/profiles/qemu-guest.nix"
-    ./systemConfig.nix
   ];
 
   fileSystems."/" = {

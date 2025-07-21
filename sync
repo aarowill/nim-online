@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-set -e
-
-scp nim-caddy.tar nim-api.tar nim-analytics.tar admin@vultr:nim-online/

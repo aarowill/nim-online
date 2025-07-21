@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-set -e
-
-docker save -o ./nim-caddy.tar aarowill/nim-caddy:latest
-docker save -o ./nim-api.tar aarowill/nim-api:latest
-docker save -o ./nim-analytics.tar aarowill/nim-analytics:latest
