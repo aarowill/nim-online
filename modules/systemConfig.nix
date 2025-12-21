@@ -62,11 +62,6 @@
           email certificates@aarowill.ca
       }
 
-      # Health check endpoint
-      # :8080 {
-      #     respond /health 200
-      # }
-
       nim-online.aarowill.ca {
           root * ${pkgs.nimClient}/public
           reverse_proxy /api/* localhost:8081
@@ -85,6 +80,10 @@
 
       nim-analytics.aarowill.ca {
           reverse_proxy localhost:8080
+      }
+
+      plexpub.aarowill.ca {
+          reverse_proxy thicc.aarowill.ca:36847
       }
     '';
   };
